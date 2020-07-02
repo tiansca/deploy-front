@@ -76,7 +76,7 @@ export default {
     filterList() {
       if (this.currProject) {
         return this.list.filter(item => {
-          item._id = this.currProject
+          return item.project_id === this.currProject
         })
       }
       return this.list
