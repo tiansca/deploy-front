@@ -1,0 +1,119 @@
+$mainColor:#0056B2;
+.zs-personal {
+  margin:40px;
+}
+.zs-personal-component {
+  width:100%;
+  height: auto;
+  background:rgba(255,255,255,1);
+  border:1px solid rgba(215,221,228,1);
+  border-radius:4px;
+}
+.zs-focus-company {
+    .zs-focus-search {
+        padding-left:40px;
+        box-sizing: border-box;
+    }
+}
+.zs-focus-search-title {
+    font-size:16px;
+    margin: 40px 0 20px 0 ;
+    color:rgba(4,100,203,1);
+    font-weight:bold;
+    line-height:36px;
+    &:after {
+        content: '';
+        width: 19px;
+        height: 2px;
+        background:rgba(4,100,203,1);
+        border-radius: 1px;
+        display: block;
+    }
+    .zs-table-totle {
+        font-size:14px;
+        font-weight:500;
+        color:rgba(153,153,153,1);
+        line-height:36px;     
+        margin-left:26px;
+        i {
+            color: #E55C73;
+            font-style: normal;
+        }
+    }
+}
+
+// 个人中心
+.zs-user-detial {
+    width: 540px;
+    margin: 0 auto;
+    height: auto;
+    padding-bottom: 80px;
+}
+.zs-detail-btn {
+    margin: 0 auto!important;
+    display: block;
+    margin-bottom: 26px;
+}
+
+.el-table /deep/ .el-table__body-wrapper tbody{
+    td {
+        border-bottom: none!important;
+    }
+}
+.el-input__inner {
+    width:280px!important;
+    margin-right: 30px;
+}
+
+.el-button--primary {
+  background:$mainColor!important;
+  border-color:$mainColor!important;
+  &:hover {
+    background: #0b66c8!important;
+    border-color: #0b66c8!important;
+  }
+}
+.el-pagination {
+  text-align:center;
+  margin-top:30px;
+  margin-bottom: 60px;
+}
+.el-pagination /deep/ {
+    .el-pager {
+      li {
+        background-color: #fff;
+        border:1px  solid $mainColor;
+        color: $mainColor;
+      }
+      li:not(.display):hover {
+        color: $mainColor;
+      }
+      li:not(.disabled).active {
+        background-color:$mainColor!important;
+         color: #fff;
+      }
+    }
+    .btn-prev, .btn-next {
+      border: 1px solid #A8AFB9;
+      background-color:#fff!important;
+      color:   $mainColor!important;
+    }
+}
+.table-list /deep/{
+  .el-table__body tr:hover>td {
+    background-color: #eff3f7;
+    color:#0056B2 ;
+    cursor: pointer;
+  }
+}
+.table-list::before {
+    height: 0;;
+}
+
+.labelColor {
+  color: #464C5B
+}
+
+.zs-user-detial, .zs-user-detial /deep/ .el-form  .el-form-item .el-form-item__label {
+  color: #212121;
+}
