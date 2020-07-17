@@ -57,6 +57,13 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/server',
+    component: () => import('@/views/server/index'),
+    // redirect: '/company_list',
+    name: 'server',
+    hidden: true
+  },
+  {
     path: '/user',
     redirect: '/user/detail',
     component: Layout,

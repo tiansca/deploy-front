@@ -55,3 +55,40 @@ export function recordList(params) {
     params
   })
 }
+
+export function getServerList(params) {
+  return request({
+    url: 'server_list',
+    method: 'get',
+    params
+  })
+}
+export function addServer(data) {
+  return request({
+    url: 'add_server',
+    method: 'post',
+    data
+  })
+}
+export function updateServer(data) {
+  return request({
+    url: 'update_server',
+    method: 'post',
+    data
+  })
+}
+export function removeServer(params) {
+  return request({
+    url: 'remove_server',
+    method: 'get',
+    params
+  })
+}
+export function changeServerStatus(params) {
+  return request({
+    url: 'change_server_status',
+    method: 'get',
+    params
+  })
+}
+
