@@ -65,11 +65,8 @@
       :before-close="handleClose"
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="项目名称" class="inline" prop="name">
-          <el-input v-model="form.name" :readonly="addType==='edit'" placeholder="必须与git项目名一致"></el-input>
-        </el-form-item>
-        <el-form-item label="项目分支" class="inline" prop="branch">
-          <el-input v-model="form.branch"></el-input>
+        <el-form-item label="项目名称" prop="name">
+          <el-input v-model="form.name" :readonly="addType==='edit'" placeholder="若想自动部署，则必须将项目名称与git项目名保持一致"></el-input>
         </el-form-item>
         <el-form-item label="项目地址" prop="url">
           <el-input v-model="form.url"></el-input>
@@ -77,13 +74,16 @@
         <el-form-item label="部署目录" prop="path">
           <el-input v-model="form.path" placeholder="web根目录下的文件夹名称，非完整路径"></el-input>
         </el-form-item>
+        <el-form-item label="项目分支" class="inline" prop="branch">
+          <el-input v-model="form.branch"></el-input>
+        </el-form-item>
+        <el-form-item label="打包命令" prop="build" class="inline">
+          <el-input v-model="form.build" placeholder="请输入打包命令"></el-input>
+        </el-form-item>
         <el-form-item label="部署服务器" prop="server" class="inline">
           <el-select v-model="form.server" placeholder="请选择服务器">
             <el-option v-for="item in serverList" v-show="item.status" :key="item._id" :value="item._id" :label="item.name"></el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="打包命令" prop="build" class="inline">
-          <el-input v-model="form.build" placeholder="请输入打包命令"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :disabled="addDisable" @click="submitForm('form')">提交</el-button>
