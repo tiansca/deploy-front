@@ -27,24 +27,11 @@
       <el-table-column
         prop="name"
         label="项目名称"
-        width="120"
       >
       </el-table-column>
       <el-table-column
         prop="branch"
         label="项目分支"
-        width="120"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="ip"
-        label="服务器地址"
-        width="120"
-      >
-      </el-table-column>
-      <el-table-column
-        prop="path"
-        label="部署路径"
       >
       </el-table-column>
       <el-table-column

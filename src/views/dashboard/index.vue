@@ -67,17 +67,8 @@
         <el-form-item label="项目地址" prop="url">
           <el-input v-model="form.url"></el-input>
         </el-form-item>
-        <el-form-item label="部署路径" prop="path">
-          <el-input v-model="form.path"></el-input>
-        </el-form-item>
-        <el-form-item label="服务器ip" prop="ip">
-          <el-input v-model="form.ip"></el-input>
-        </el-form-item>
-        <el-form-item label="服务器用户名" class="inline" prop="username">
-          <el-input v-model="form.username"></el-input>
-        </el-form-item>
-        <el-form-item label="服务器密码" class="inline" prop="password">
-          <el-input v-model="form.password"></el-input>
+        <el-form-item label="打包命令" prop="build">
+          <el-input v-model="form.build"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :disabled="addDisable" @click="submitForm('form')">提交</el-button>
@@ -100,10 +91,7 @@ export default {
         name: '',
         url: '',
         branch: '',
-        path: '',
-        ip: '',
-        username: '',
-        password: ''
+        build: 'npm run build:stage'
       },
       rules: {
         name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
@@ -206,10 +194,7 @@ export default {
         name: '',
         url: '',
         branch: '',
-        path: '',
-        ip: '',
-        username: '',
-        password: ''
+        build: 'npm run build:stage'
       }
     },
     updateProject() {
@@ -225,11 +210,22 @@ export default {
       })
     },
     removeProject(id) {
-      removeProject({
-        id: id
-      }).then(res => {
-        this.$message.success(res.msg)
-        this.getList()
+      this.$confirm('确定要删除该项目吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        removeProject({
+          id: id
+        }).then(res => {
+          this.$message.success(res.msg)
+          this.getList()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     goRecord(id) {
