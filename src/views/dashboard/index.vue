@@ -58,16 +58,16 @@
       :before-close="handleClose"
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="项目名称" class="inline" prop="name">
-          <el-input v-model="form.name" :readonly="addType==='edit'" placeholder="必须与git项目名一致"></el-input>
-        </el-form-item>
-        <el-form-item label="项目分支" class="inline" prop="branch">
-          <el-input v-model="form.branch"></el-input>
+        <el-form-item label="项目名称" prop="name">
+          <el-input v-model="form.name" :readonly="addType==='edit'" placeholder="若要自动部署，项目名称必须与git项目名一致"></el-input>
         </el-form-item>
         <el-form-item label="项目地址" prop="url">
           <el-input v-model="form.url"></el-input>
         </el-form-item>
-        <el-form-item label="打包命令" prop="build">
+        <el-form-item label="项目分支" class="inline" prop="branch">
+          <el-input v-model="form.branch"></el-input>
+        </el-form-item>
+        <el-form-item label="打包命令" class="inline" prop="build">
           <el-input v-model="form.build"></el-input>
         </el-form-item>
         <el-form-item>
