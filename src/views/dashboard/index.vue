@@ -71,8 +71,11 @@
         <el-form-item label="项目地址" prop="url">
           <el-input v-model="form.url"></el-input>
         </el-form-item>
-        <el-form-item label="部署目录" prop="path">
-          <el-input v-model="form.path" placeholder="web根目录下的文件夹名称，非完整路径"></el-input>
+        <el-form-item label="部署目录" class="inline" prop="path" title="web根目录下的文件夹名称，非完整路径">
+          <el-input v-model="form.path" placeholder="web根目录下的文件夹名称"></el-input>
+        </el-form-item>
+        <el-form-item label="本地目录" class="inline" prop="localPath" title="本地项目文件夹名称，为空则用项目名称">
+          <el-input v-model="form.localPath" placeholder="本地项目文件夹名称，为空则用项目名称"></el-input>
         </el-form-item>
         <el-form-item label="项目分支" class="inline" prop="branch">
           <el-input v-model="form.branch"></el-input>
@@ -107,6 +110,7 @@ export default {
         url: '',
         branch: '',
         path: '',
+        localPath: '',
         server: '',
         build: 'npm run build:stage'
       },
