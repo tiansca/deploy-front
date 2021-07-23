@@ -54,7 +54,7 @@
     <el-dialog
       :title="addType==='add'?'添加项目':'编辑项目'"
       :visible.sync="showAdd"
-      width="650px"
+      width="700px"
       :before-close="handleClose"
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
@@ -69,6 +69,12 @@
         </el-form-item>
         <el-form-item label="打包命令" class="inline" prop="build">
           <el-input v-model="form.build"></el-input>
+        </el-form-item>
+        <el-form-item label="目录名称" title="拉取项目后的目录名称" class="inline">
+          <el-input v-model.trim="form.directoryName" placeholder="若为空则与项目名称一致"></el-input>
+        </el-form-item>
+        <el-form-item label="部署路径" title="项目部署的绝对路径" class="inline">
+          <el-input v-model.trim="form.deployPath" placeholder="若为空则与打包路径一致"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :disabled="addDisable" @click="submitForm('form')">提交</el-button>
@@ -89,6 +95,8 @@ export default {
       showAdd: false,
       form: {
         name: '',
+        directoryName: '',
+        deployPath: '',
         url: '',
         branch: '',
         build: 'npm run build:stage'
