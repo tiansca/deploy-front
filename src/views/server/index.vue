@@ -27,9 +27,12 @@
       >
       </el-table-column>
       <el-table-column
-        prop="password"
-        label="密码"
+        prop="connectionType"
+        label="连接方式"
       >
+        <template slot-scope="scope">
+          {{ scope.row.connectionType ? '密钥' : '密码' }}
+        </template>
       </el-table-column>
       <el-table-column
         prop="rootPath"
@@ -70,14 +73,22 @@
         <el-form-item label="ip" class="inline" prop="ip">
           <el-input v-model="form.ip"></el-input>
         </el-form-item>
-        <el-form-item label="用户名" prop="username">
+        <el-form-item label="用户名" prop="username" class="inline">
           <el-input v-model="form.username"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <br>
+        <el-form-item label="连接方式" prop="connectionType" class="inline">
+          <el-radio v-model="form.connectionType" :label="0">密码</el-radio>
+          <el-radio v-model="form.connectionType" :label="1">密钥</el-radio>
+        </el-form-item>
+        <el-form-item v-show="!form.connectionType" label="密码" :rules="!form.connectionType ? rules.password : null" class="inline">
           <el-input v-model="form.password"></el-input>
         </el-form-item>
-        <el-form-item label="部署根目录" prop="rootPath">
-          <el-input v-model="form.rootPath" placeholder="web服务器存放网页的根目录"></el-input>
+        <el-form-item v-show="form.connectionType" class="inline" label="私钥路径" :rules="form.connectionType ? rules.privateKey : null">
+          <el-input v-model="form.privateKey"></el-input>
+        </el-form-item>
+        <el-form-item label="部署目录" prop="rootPath">
+          <el-input v-model="form.rootPath" placeholder="web服务器下存放网页的目录"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :disabled="addDisable" @click="submitForm('form')">提交</el-button>
@@ -101,14 +112,17 @@ export default {
         ip: '',
         username: '',
         password: '',
-        rootPath: ''
+        rootPath: '',
+        connectionType: 0,
+        privateKey: ''
       },
       rules: {
         name: [{ required: true, message: '请输入服务器名称', trigger: 'blur' }],
         rootPath: [{ required: true, message: '请输入部署根路径', trigger: 'blur' }],
         ip: [{ required: true, message: '请输入服务器ip', trigger: 'blur' }],
         username: [{ required: true, message: '请输入服务器用户名', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入服务器密码', trigger: 'blur' }]
+        password: [{ required: true, message: '请输入服务器密码', trigger: 'blur' }],
+        privateKey: [{ required: true, message: '请输入密钥路径', trigger: 'blur' }]
       },
       addType: 'add',
       addDisable: false
@@ -193,7 +207,9 @@ export default {
         ip: '',
         username: '',
         password: '',
-        rootPath: ''
+        rootPath: '',
+        connectionType: 0,
+        privateKey: ''
       }
     },
     updateProject() {
