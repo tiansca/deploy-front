@@ -42,7 +42,31 @@
           {{ scope.row.shijian | timeFilter }}
         </template>
       </el-table-column>
+      <el-table-column
+        label="状态"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.success ? '成功' : '失败' }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="日志"
+      >
+        <template slot-scope="scope">
+          <span @click="showLog(scope.row.log)">点击查看</span>
+        </template>
+      </el-table-column>
     </el-table>
+    <el-dialog
+      title="日志"
+      :visible.sync="dialogVisible"
+      width="60%"
+    >
+      <p v-for="(item, index) in logArr" :key="index" style="margin: 8px 0">{{ item }}</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogVisible = false">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -56,7 +80,9 @@ export default {
       id: '',
       projectList: [],
       currProject: '',
-      timer: null
+      timer: null,
+      dialogVisible: false,
+      log: ''
     }
   },
   computed: {
@@ -67,6 +93,9 @@ export default {
         })
       }
       return this.list
+    },
+    logArr() {
+      return this.log.split('<br>')
     }
   },
   mounted() {
@@ -102,6 +131,13 @@ export default {
       setTimeout(() => {
         this.currProject = this.id
       })
+    },
+    showLog(log) {
+      this.dialogVisible = true
+      if (!log) {
+        return
+      }
+      this.log = log
     }
   }
 }

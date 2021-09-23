@@ -51,8 +51,8 @@ module.exports = {
       //   // timeout: 10000
       // },
       '/api': {
-        // target: ' http://192.168.2.24:8081'
         target: 'http://localhost:3210',
+        // target: 'http://tiansc.top:3210',
         changeOrigin: true,
         pathRewrite: { // 重命名
           '^/api': ''
