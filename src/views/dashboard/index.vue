@@ -70,6 +70,9 @@
         <el-form-item label="打包命令" class="inline" prop="build">
           <el-input v-model="form.build"></el-input>
         </el-form-item>
+        <el-form-item label="打包路径" class="inline" prop="outputDir">
+          <el-input v-model="form.outputDir" placeholder="打包构建文件的相对路径"></el-input>
+        </el-form-item>
         <el-form-item label="目录名称" title="拉取项目后的目录名称" class="inline">
           <el-input v-model.trim="form.directoryName" placeholder="若为空则与项目名称一致"></el-input>
         </el-form-item>
@@ -99,7 +102,8 @@ export default {
         deployPath: '',
         url: '',
         branch: '',
-        build: 'npm run build:stage'
+        build: 'npm run build:stage',
+        outputDir: 'dist'
       },
       rules: {
         name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
@@ -202,7 +206,8 @@ export default {
         name: '',
         url: '',
         branch: '',
-        build: 'npm run build:stage'
+        build: 'npm run build:stage',
+        outputDir: 'dist'
       }
     },
     updateProject() {
