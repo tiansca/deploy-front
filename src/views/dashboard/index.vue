@@ -71,9 +71,6 @@
         <el-form-item label="项目地址" prop="url">
           <el-input v-model="form.url"></el-input>
         </el-form-item>
-        <el-form-item label="部署目录" class="inline" prop="path" title="web根目录下的文件夹名称，非完整路径">
-          <el-input v-model="form.path" placeholder="web根目录下的文件夹名称"></el-input>
-        </el-form-item>
         <el-form-item label="本地目录" class="inline" prop="localPath" title="本地项目文件夹名称，为空则用项目名称">
           <el-input v-model="form.localPath" placeholder="本地项目文件夹名称，为空则用项目名称"></el-input>
         </el-form-item>
@@ -83,10 +80,16 @@
         <el-form-item label="打包命令" prop="build" class="inline">
           <el-input v-model="form.build" placeholder="请输入打包命令"></el-input>
         </el-form-item>
+        <el-form-item label="打包路径" class="inline" prop="outputDir">
+          <el-input v-model="form.outputDir" placeholder="打包构建文件的相对路径"></el-input>
+        </el-form-item>
         <el-form-item label="部署服务器" prop="server" class="inline">
           <el-select v-model="form.server" placeholder="请选择服务器">
             <el-option v-for="item in serverList" v-show="item.status" :key="item._id" :value="item._id" :label="item.name"></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="部署目录" class="inline" prop="path" title="web根目录下的文件夹名称，非完整路径">
+          <el-input v-model="form.path" placeholder="web根目录下的文件夹名称"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :disabled="addDisable" @click="submitForm('form')">提交</el-button>
@@ -112,7 +115,8 @@ export default {
         path: '',
         localPath: '',
         server: '',
-        build: 'npm run build:stage'
+        build: 'npm run build:stage',
+        outputDir: 'dist'
       },
       rules: {
         name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
@@ -218,7 +222,8 @@ export default {
         branch: '',
         path: '',
         server: '',
-        build: 'npm run build:stage'
+        build: 'npm run build:stage',
+        outputDir: 'dist'
       }
     },
     updateProject() {

@@ -55,7 +55,35 @@
           {{ scope.row.shijian | timeFilter }}
         </template>
       </el-table-column>
+      <el-table-column
+        label="状态"
+      >
+        <template slot-scope="scope">
+          {{ scope.row.success ? '成功' : '失败' }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="日志"
+      >
+        <template slot-scope="scope">
+          <span @click="showLog(scope.row.log)">点击查看</span>
+        </template>
+      </el-table-column>
     </el-table>
+
+    <el-dialog
+      title="日志"
+      :visible.sync="dialogVisible"
+      class="my-dialog"
+    >
+      <div class="log-box">
+        <p v-for="(item, index) in logArr" :key="index" style="margin: 8px 0">{{ item }}</p>
+      </div>
+      <div v-if="!logArr || logArr.length === 0">暂无数据</div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogVisible = false">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -69,7 +97,9 @@ export default {
       id: '',
       projectList: [],
       currProject: '',
-      timer: null
+      timer: null,
+      dialogVisible: false,
+      log: ''
     }
   },
   computed: {
@@ -80,6 +110,9 @@ export default {
         })
       }
       return this.list
+    },
+    logArr() {
+      return this.log.split('<br>')
     }
   },
   mounted() {
@@ -115,6 +148,13 @@ export default {
       setTimeout(() => {
         this.currProject = this.id
       })
+    },
+    showLog(log) {
+      this.dialogVisible = true
+      if (!log) {
+        return
+      }
+      this.log = log
     }
   }
 }
@@ -131,5 +171,22 @@ export default {
   }
   .selectWrap /deep/ .el-select{
     float: right;
+  }
+  .my-dialog /deep/ .el-dialog{
+    min-width: 500px;
+    width: 60%;
+  }
+  .log-box{
+    max-height: calc(100vh - 300px);
+    overflow: auto;
+  }
+  @media all and (max-width: 800px) {
+    .my-dialog /deep/ .el-dialog{
+      width: 90%;
+      min-width: auto;
+    }
+    .log-box{
+      max-height: calc(100vh - 400px);
+    }
   }
 </style>
