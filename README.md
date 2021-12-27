@@ -1,5 +1,15 @@
 # lingxi_front
 
+##项目介绍
+
+前端项目自动部署的前端部分
+后端项目地址：[https://github.com/tiansca/deploy](https://github.com/tiansca/deploy)
+
+##分支
+
+online: 服务器端打包部署
+local: 本地打包，远程上传到服务器指定目录
+
 ##目录结构
 
 ├── build　　                      # 构建相关  
@@ -42,10 +52,10 @@
 
 ```bash
 # 克隆项目
-git clone http://gitlab.lingxidata.net/vue/lingxi-cyjc.git
+git clone https://github.com/tiansca/depoy-front
 
 # 进入项目目录
-cd lingxi-cyjc
+cd depoy-front
 
 # 安装依赖
 npm install
