@@ -68,21 +68,21 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-	.company-popup  /deep/ .el-dialog__footer{
+	.company-popup  ::v-deep .el-dialog__footer{
 			.el-button--primary {
 					background:rgba(0,86,178,1);
 					border-radius:2px;
 					border-color:transparent;
 			}
 	}
-	.company-popup-table /deep/ {
+	.company-popup-table ::v-deep {
 			.el-table__body-wrapper {
 					tr td {
 							border:none!important;
 					}
 			}
 	}
-	.company-popup /deep/  tbody tr:hover>td {
+	.company-popup ::v-deep  tbody tr:hover>td {
     background-color:#ffffff
 	}
 </style>

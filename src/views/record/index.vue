@@ -154,7 +154,7 @@ export default {
     right: 20px;
     top: 0
   }
-  .selectWrap /deep/ .el-select{
+  .selectWrap ::v-deep .el-select{
     float: right;
   }
   .my-dialog /deep/ .el-dialog{

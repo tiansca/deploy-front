@@ -1175,11 +1175,11 @@ export default {
 .select-item-box1 {
   margin-bottom: 10px;
 }
-.select-item-nic-box /deep/ .el-input__inner {
+.select-item-nic-box ::v-deep .el-input__inner {
   height: 32px;
   line-height: 32px;
 }
-.select-item-nic-box /deep/ .el-cascader {
+.select-item-nic-box ::v-deep .el-cascader {
   // height: 34px;
   line-height: 32px;
 }
@@ -1223,7 +1223,7 @@ export default {
 .select-item-time-box {
   position: relative;
 }
-.maxSelect /deep/ .select-box {
+.maxSelect ::v-deep .select-box {
   width: 125px !important;
 }
 .select-show-wrap {
@@ -1244,17 +1244,17 @@ export default {
   box-shadow:0px 3px 5px 0px rgba(0, 0, 0, 0.1);
   border-radius:2px;
   z-index: 10;
-  /deep/ .el-date-editor.el-input, .el-date-editor.el-input__inner {
+  ::v-deep .el-date-editor.el-input, .el-date-editor.el-input__inner {
     width: 90%;
     height: 24px;
     font-size: 12px;
   }
-  /deep/ .el-input__inner {
+  ::v-deep .el-input__inner {
     height: 24px;
     line-height: 24px;
     font-size: 12px;
   }
-  /deep/ .el-input__icon {
+  ::v-deep .el-input__icon {
     line-height: 24px;
   }
   .block {
@@ -1268,12 +1268,12 @@ export default {
     margin-top: 8px;
     cursor: pointer;
   }
-  /deep/ .el-form-item {
+  ::v-deep .el-form-item {
     height: 24px;
     margin: 8px 0;
     display: flex;
   }
-  /deep/ .el-form-item__content {
+  ::v-deep .el-form-item__content {
     display: flex;
   }
 }

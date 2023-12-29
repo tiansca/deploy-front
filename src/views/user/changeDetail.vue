@@ -110,7 +110,7 @@ export default {
 </script>
 <style lang="scss" scoped src="./index.scss"></style>
 <style lang="scss" scoped>
-.el-input /deep/ .el-input__inner:focus {
+.el-input ::v-deep .el-input__inner:focus {
   border-color:#0464CB!important;
 }
 .zs-detail-btn {
@@ -121,7 +121,7 @@ export default {
     margin-left:-10px
   }
 }
-.space /deep/  {
+.space ::v-deep  {
   .el-form-item__label {
     letter-spacing: 5px;
   }

@@ -33,7 +33,7 @@ $mainColor:#0056B2;
         font-size:14px;
         font-weight:500;
         color:rgba(153,153,153,1);
-        line-height:36px;     
+        line-height:36px;
         margin-left:26px;
         i {
             color: #E55C73;
@@ -55,7 +55,7 @@ $mainColor:#0056B2;
     margin-bottom: 26px;
 }
 
-.el-table /deep/ .el-table__body-wrapper tbody{
+.el-table ::v-deep .el-table__body-wrapper tbody{
     td {
         border-bottom: none!important;
     }
@@ -78,7 +78,7 @@ $mainColor:#0056B2;
   margin-top:30px;
   margin-bottom: 60px;
 }
-.el-pagination /deep/ {
+.el-pagination ::v-deep {
     .el-pager {
       li {
         background-color: #fff;
@@ -99,7 +99,7 @@ $mainColor:#0056B2;
       color:   $mainColor!important;
     }
 }
-.table-list /deep/{
+.table-list ::v-deep{
   .el-table__body tr:hover>td {
     background-color: #eff3f7;
     color:#0056B2 ;
@@ -114,6 +114,6 @@ $mainColor:#0056B2;
   color: #464C5B
 }
 
-.zs-user-detial, .zs-user-detial /deep/ .el-form  .el-form-item .el-form-item__label {
+.zs-user-detial, .zs-user-detial ::v-deep .el-form  .el-form-item .el-form-item__label {
   color: #212121;
 }

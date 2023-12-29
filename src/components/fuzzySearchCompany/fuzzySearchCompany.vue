@@ -71,7 +71,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 $mainColor:#0464CB;
-  .el-select /deep/ .el-input.is-focus .el-input__inner {
+  .el-select ::v-deep .el-input.is-focus .el-input__inner {
     border-color: $mainColor!important;
   }
 </style>

@@ -86,7 +86,7 @@ export default {
 }
 </script>
 <style scoped>
-  /deep/ .el-menu-item, /deep/ .el-submenu__title{
+  ::v-deep .el-menu-item, ::v-deep .el-submenu__title{
     font-size: 16px;
   }
 </style>

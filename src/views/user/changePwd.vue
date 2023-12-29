@@ -84,7 +84,7 @@ export default {
 </script>
 <style lang="scss" scoped src="./index.scss"></style>
 <style lang="scss" scoped>
-.el-input /deep/ .el-input__inner:focus {
+.el-input ::v-deep .el-input__inner:focus {
   border-color:#0464CB!important;
 }
 .el-form {
