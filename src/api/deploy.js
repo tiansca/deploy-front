@@ -55,3 +55,27 @@ export function recordList(params) {
     params
   })
 }
+// 新建shell
+export function addShellApi(data) {
+  return request({
+    url: 'add_shell',
+    method: 'post',
+    data
+  })
+}
+// 编辑shell
+export function updateShellApi(data) {
+  return request({
+    url: 'update_shell',
+    method: 'post',
+    data
+  })
+}
+// 获取shell详情
+export function getShellApi(params) {
+  return request({
+    url: 'get_shell_content',
+    method: 'get',
+    params
+  })
+}

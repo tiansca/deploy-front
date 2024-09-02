@@ -21,7 +21,7 @@
       </el-select>
     </div>
     <el-table
-      :data="filterList"
+      :data="list"
       style="width: 900px;margin: 20px auto;"
     >
       <el-table-column
@@ -57,10 +57,22 @@
         </template>
       </el-table-column>
     </el-table>
+    <div style="margin: 20px; display: flex;align-items: center;justify-content: center">
+      <el-pagination
+        background
+        layout="total, prev, pager, next"
+        :total="count"
+        :current-page.sync="pageIndex"
+        @current-change="pageIndexChange"
+      >
+      </el-pagination>
+    </div>
+
     <el-dialog
       title="日志"
       :visible.sync="dialogVisible"
       class="my-dialog"
+      custom-class="logDialog"
     >
       <div class="log-box">
         <p v-for="(item, index) in logArr" :key="index" style="margin: 8px 0">{{ item }}</p>
@@ -81,29 +93,38 @@ export default {
       list: [],
       id: '',
       projectList: [],
-      currProject: '',
+      currProject: null,
       timer: null,
       dialogVisible: false,
-      log: ''
+      log: '',
+      pageSize: 10,
+      pageIndex: 1,
+      count: 0
     }
   },
   computed: {
-    filterList() {
-      if (this.currProject) {
-        return this.list.filter(item => {
-          return item.project_id === this.currProject
-        })
-      }
-      return this.list
-    },
+    // filterList() {
+    //   if (this.currProject) {
+    //     return this.list.filter(item => {
+    //       return item.project_id === this.currProject
+    //     })
+    //   }
+    //   return this.list
+    // },
     logArr() {
       return this.log.split('<br>')
     }
   },
+  watch: {
+    currProject(n) {
+      this.pageIndex = 1
+      this.getList()
+    }
+  },
   mounted() {
-    this.getList()
+    this.id = this.$route.query.id || ''
     this.getProjectList()
-    this.id = this.$route.query.id
+    // this.getList()
     this.timer = setInterval(() => {
       this.getList()
     }, 10000)
@@ -115,9 +136,14 @@ export default {
   },
   methods: {
     getList() {
-      recordList().then(res => {
+      recordList({
+        project_id: this.currProject === null ? this.id : this.currProject,
+        pageSize: this.pageSize,
+        pageIndex: this.pageIndex
+      }).then(res => {
         console.log(res)
-        this.list = res.data
+        this.list = res.data.list
+        this.count = res.data.count
       })
     },
     goBank() {
@@ -140,6 +166,10 @@ export default {
         return
       }
       this.log = log
+    },
+    pageIndexChange(e) {
+      console.log(e)
+      this.getList()
     }
   }
 }
@@ -160,9 +190,10 @@ export default {
   .my-dialog /deep/ .el-dialog{
     min-width: 500px;
     width: 60%;
+    margin-top: 5vh;
   }
   .log-box{
-    max-height: calc(100vh - 300px);
+    max-height: calc(100vh - 10vh - 180px);
     overflow: auto;
   }
   @media all and (max-width: 800px) {
@@ -173,5 +204,8 @@ export default {
     .log-box{
       max-height: calc(100vh - 400px);
     }
+  }
+  ::v-deep .logDialog{
+    margin-top: 5vh!important;
   }
 </style>

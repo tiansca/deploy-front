@@ -54,42 +54,80 @@
     <el-dialog
       :title="addType==='add'?'添加项目':'编辑项目'"
       :visible.sync="showAdd"
-      width="700px"
       :before-close="handleClose"
+      custom-class="addDialog"
     >
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+      <el-form ref="form" style="width: 800px; margin: auto" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="项目名称" prop="name">
           <el-input v-model="form.name" :readonly="addType==='edit'" placeholder="若要自动部署，项目名称必须与git项目名一致"></el-input>
         </el-form-item>
         <el-form-item label="项目地址" prop="url">
           <el-input v-model="form.url"></el-input>
         </el-form-item>
-        <el-form-item label="项目分支" class="inline" prop="branch">
+        <el-form-item label="响应事件" class="inline" prop="eventType">
+          <el-radio-group v-model="form.eventType">
+            <el-radio label="push">代码推送</el-radio>
+            <el-radio label="tag">创建分支</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item v-if="form.eventType === 'push'" label="项目分支" class="inline" prop="branch">
           <el-input v-model="form.branch"></el-input>
         </el-form-item>
-        <el-form-item label="打包命令" class="inline" prop="build">
-          <el-input v-model="form.build"></el-input>
+        <el-form-item v-if="form.eventType === 'tag'" label="tag前缀" class="inline" prop="tagPrefixes">
+          <el-input v-model="form.tagPrefixes" placeholder="若为空则响应所有tag"></el-input>
         </el-form-item>
-        <el-form-item label="打包路径" class="inline" prop="outputDir">
-          <el-input v-model="form.outputDir" placeholder="打包构建文件的相对路径"></el-input>
+        <el-form-item label="构建模式" prop="buildMode">
+          <el-radio-group v-model="form.buildMode">
+            <el-radio label="npm">npm</el-radio>
+            <el-radio label="shell">shell</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item label="目录名称" title="拉取项目后的目录名称" class="inline">
-          <el-input v-model.trim="form.directoryName" placeholder="若为空则与项目名称一致"></el-input>
-        </el-form-item>
-        <el-form-item label="部署路径" title="项目部署的绝对路径" class="inline">
-          <el-input v-model.trim="form.deployPath" placeholder="若为空则与打包路径一致"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" :disabled="addDisable" @click="submitForm('form')">提交</el-button>
-          <el-button @click="closeAdd">取消</el-button>
+        <div v-if="form.buildMode === 'npm'">
+          <el-form-item label="打包命令" class="inline" prop="build">
+            <el-input v-model="form.build"></el-input>
+          </el-form-item>
+          <el-form-item label="打包路径" class="inline" prop="outputDir">
+            <el-input v-model="form.outputDir" placeholder="打包构建文件的相对路径"></el-input>
+          </el-form-item>
+          <el-form-item label="目录名称" title="拉取项目后的目录名称" class="inline">
+            <el-input v-model.trim="form.directoryName" placeholder="若为空则与项目名称一致"></el-input>
+          </el-form-item>
+          <el-form-item label="部署路径" title="项目部署的绝对路径" class="inline">
+            <el-input v-model.trim="form.deployPath" placeholder="若为空则与打包路径一致"></el-input>
+          </el-form-item>
+        </div>
+
+        <el-form-item v-else label="部署脚本" prop="buildShell">
+          <div>
+            <el-button v-if="buildShellContent && !buildEdit" type="primary" size="mini" @click="buildEdit=true;editType='update'">编辑</el-button>
+            <el-button v-if="buildEdit" size="mini" @click="buildEdit=false">取消</el-button>
+            <el-button v-if="buildEdit" size="mini" type="primary" @click="submitShell">保存</el-button>
+            <el-button v-if="!buildShellContent && !buildEdit" size="mini" type="primary" @click="addBuildShell">添加脚本</el-button>
+          </div>
+          <el-input v-if="buildEdit" v-model="buildShellContent" type="textarea" rows="10"></el-input>
+          <div v-else-if="buildShellContent"><pre style="white-space: break-spaces" v-html="buildShellContent"></pre></div>
         </el-form-item>
       </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" :disabled="addDisable" @click="submitForm('form')">提交</el-button>
+        <el-button @click="closeAdd">取消</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getList, changeStatus, deploy, addProject, updateProject, removeProject } from '@/api/deploy.js'
+import {
+  getList,
+  changeStatus,
+  deploy,
+  addProject,
+  updateProject,
+  removeProject,
+  addShellApi,
+  updateShellApi,
+  getShellApi
+} from '@/api/deploy.js'
 export default {
   name: 'Dashboard',
   data() {
@@ -102,20 +140,33 @@ export default {
         deployPath: '',
         url: '',
         branch: '',
+        tagPrefixes: '',
+        buildMode: 'npm',
         build: 'npm run build:stage',
-        outputDir: 'dist'
-      },
-      rules: {
-        name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
-        url: [{ required: true, message: '请输入项目地址', trigger: 'blur' }],
-        branch: [{ required: true, message: '请输入项目分支', trigger: 'blur' }],
-        path: [{ required: true, message: '请输入部署路径', trigger: 'blur' }],
-        ip: [{ required: true, message: '请输入服务器ip', trigger: 'blur' }],
-        username: [{ required: true, message: '请输入服务器用户名', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入服务器密码', trigger: 'blur' }]
+        outputDir: 'dist',
+        eventType: 'push',
+        buildShell: '' // 构建脚本
       },
       addType: 'add',
-      addDisable: false
+      addDisable: false,
+      buildShellContent: '',
+      buildEdit: false,
+      editType: 'update' // 编辑类型update/add
+    }
+  },
+  computed: {
+    rules() {
+      return {
+        name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
+        url: [{ required: true, message: '请输入项目地址', trigger: 'blur' }],
+        eventType: [{ required: true, message: '请选择响应事件', trigger: 'change' }],
+        branch: [{ required: this.form.eventType === 'push', message: '请输入项目分支', trigger: 'blur' }],
+        path: [{ required: this.form.buildMode === 'npm', message: '请输入部署路径', trigger: 'blur' }],
+        ip: [{ required: true, message: '请输入服务器ip', trigger: 'blur' }],
+        username: [{ required: true, message: '请输入服务器用户名', trigger: 'blur' }],
+        password: [{ required: true, message: '请输入服务器密码', trigger: 'blur' }],
+        buildShell: [{ required: this.form.buildMode === 'shell', message: '请添加构建脚本', trigger: 'blur' }]
+      }
     }
   },
   mounted() {
@@ -150,11 +201,18 @@ export default {
         this.$message.error('响应失败！')
       })
     },
-    openAdd(type, project) {
+    async openAdd(type, project) {
+      console.log(project)
       this.addType = type || 'add'
       this.showAdd = true
       if (this.addType === 'edit') {
         this.form = { ...project }
+        if (project.buildShell) {
+          // 获取构建脚本
+          const { data } = await getShellApi({ name: project.buildShell })
+          console.log(data)
+          this.buildShellContent = data.content
+        }
       }
     },
     handleClose(done) {
@@ -163,6 +221,10 @@ export default {
       done()
     },
     submitForm(formName) {
+      if (this.buildEdit) {
+        this.$message.error('请先保存构建脚本！')
+        return
+      }
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.addDisable = true
@@ -249,6 +311,37 @@ export default {
           id: id
         }
       })
+    },
+    submitShell() {
+      if (!this.buildShellContent) {
+        this.$message.error('请输入构建脚本！')
+        return
+      }
+      if (this.editType === 'add' && !this.form.buildShell) {
+        addShellApi({
+          content: this.buildShellContent
+        }).then(res => {
+          this.$message.success(res.msg)
+          this.buildEdit = false
+          this.form.buildShell = res.data.name
+        }).catch(err => {
+          this.$message.error(err.msg)
+        })
+      } else {
+        updateShellApi({
+          name: this.form.buildShell,
+          content: this.buildShellContent
+        }).then(res => {
+          this.$message.success(res.msg)
+          this.buildEdit = false
+        }).catch(err => {
+          this.$message.error(err.msg)
+        })
+      }
+    },
+    addBuildShell() {
+      this.buildEdit = true
+      this.editType = 'add'
     }
   }
 }
@@ -263,6 +356,15 @@ export default {
     font-size: 30px;
     line-height: 46px;
   }
+}
+::v-deep .addDialog{
+  width: 100%;
+  height: 100vh;
+  margin: 0!important;
+}
+::v-deep .dialog-footer{
+  width: 800px;
+  margin: auto;
 }
 </style>
 <style scoped>
