@@ -4,7 +4,7 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 /* Layout */
-import Layout from '@/layout'
+// import Layout from '@/layout'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -55,20 +55,6 @@ export const constantRoutes = [
     // redirect: '/company_list',
     name: 'record',
     hidden: true
-  },
-  {
-    path: '/user',
-    redirect: '/user/detail',
-    component: Layout,
-    hidden: true,
-    children: [{
-      path: 'detail',
-      name: 'detail',
-      component: () => import('@/views/user/user'),
-      meta: {
-        title: '个人信息'
-      }
-    }]
   }
 ]
 
