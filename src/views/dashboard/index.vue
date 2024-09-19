@@ -67,7 +67,7 @@
         <el-form-item label="响应事件" class="inline" prop="eventType">
           <el-radio-group v-model="form.eventType">
             <el-radio label="push">代码推送</el-radio>
-            <el-radio label="tag">创建分支</el-radio>
+            <el-radio label="tag">创建tag</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item v-if="form.eventType === 'push'" label="项目分支" class="inline" prop="branch">
@@ -142,7 +142,7 @@ export default {
         branch: '',
         tagPrefixes: '',
         buildMode: 'npm',
-        build: 'npm run build:stage',
+        build: 'npm run build',
         outputDir: 'dist',
         eventType: 'push',
         buildShell: '' // 构建脚本
@@ -213,7 +213,24 @@ export default {
           console.log(data)
           this.buildShellContent = data.content
         }
+      } else {
+        this.form = {
+          name: '',
+          directoryName: '',
+          deployPath: '',
+          url: '',
+          branch: '',
+          tagPrefixes: '',
+          buildMode: 'npm',
+          build: 'npm run build',
+          outputDir: 'dist',
+          eventType: 'push',
+          buildShell: '' // 构建脚本
+        }
       }
+      this.$nextTick(() => {
+        this.$refs['form'].clearValidate()
+      })
     },
     handleClose(done) {
       console.log('关闭')
@@ -255,8 +272,11 @@ export default {
       })
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields()
       this.emptyForm()
+      this.$nextTick(() => {
+        console.log(this.$refs[formName])
+        this.$refs[formName].clearValidate()
+      })
     },
     closeAdd() {
       this.addDisable = false
@@ -266,10 +286,16 @@ export default {
     emptyForm() {
       this.form = {
         name: '',
+        directoryName: '',
+        deployPath: '',
         url: '',
         branch: '',
-        build: 'npm run build:stage',
-        outputDir: 'dist'
+        tagPrefixes: '',
+        buildMode: 'npm',
+        build: 'npm run build',
+        outputDir: 'dist',
+        eventType: 'push',
+        buildShell: '' // 构建脚本
       }
     },
     updateProject() {
