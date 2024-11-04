@@ -34,11 +34,11 @@
           {{ scope.row.connectionType ? '密钥' : '密码' }}
         </template>
       </el-table-column>
-      <el-table-column
-        prop="rootPath"
-        label="部署根目录"
-      >
-      </el-table-column>
+      <!--      <el-table-column-->
+      <!--        prop="rootPath"-->
+      <!--        label="部署根目录"-->
+      <!--      >-->
+      <!--      </el-table-column>-->
       <el-table-column
         prop="status"
         label="是否可用"
@@ -87,9 +87,9 @@
         <el-form-item v-show="form.connectionType" class="inline" label="私钥路径" :rules="form.connectionType ? rules.privateKey : null">
           <el-input v-model="form.privateKey"></el-input>
         </el-form-item>
-        <el-form-item label="部署目录" prop="rootPath">
-          <el-input v-model="form.rootPath" placeholder="web服务器下存放网页的目录"></el-input>
-        </el-form-item>
+        <!--        <el-form-item label="部署目录" prop="rootPath">-->
+        <!--          <el-input v-model="form.rootPath" placeholder="web服务器下存放网页的目录"></el-input>-->
+        <!--        </el-form-item>-->
         <el-form-item>
           <el-button type="primary" :disabled="addDisable" @click="submitForm('form')">提交</el-button>
           <el-button @click="closeAdd">取消</el-button>
@@ -112,13 +112,13 @@ export default {
         ip: '',
         username: '',
         password: '',
-        rootPath: '',
+        // rootPath: '',
         connectionType: 0,
         privateKey: ''
       },
       rules: {
         name: [{ required: true, message: '请输入服务器名称', trigger: 'blur' }],
-        rootPath: [{ required: true, message: '请输入部署根路径', trigger: 'blur' }],
+        // rootPath: [{ required: true, message: '请输入部署根路径', trigger: 'blur' }],
         ip: [{ required: true, message: '请输入服务器ip', trigger: 'blur' }],
         username: [{ required: true, message: '请输入服务器用户名', trigger: 'blur' }],
         password: [{ required: true, message: '请输入服务器密码', trigger: 'blur' }],
@@ -207,7 +207,7 @@ export default {
         ip: '',
         username: '',
         password: '',
-        rootPath: '',
+        // rootPath: '',
         connectionType: 0,
         privateKey: ''
       }

@@ -21,7 +21,7 @@
       </el-select>
     </div>
     <el-table
-      :data="filterList"
+      :data="list"
       style="width: 900px;margin: 20px auto;"
     >
       <el-table-column
@@ -70,7 +70,16 @@
         </template>
       </el-table-column>
     </el-table>
-
+    <div style="margin: 20px; display: flex;align-items: center;justify-content: center">
+      <el-pagination
+        background
+        layout="total, prev, pager, next"
+        :total="count"
+        :current-page.sync="pageIndex"
+        @current-change="pageIndexChange"
+      >
+      </el-pagination>
+    </div>
     <el-dialog
       title="日志"
       :visible.sync="dialogVisible"
@@ -99,26 +108,35 @@ export default {
       currProject: '',
       timer: null,
       dialogVisible: false,
-      log: ''
+      log: '',
+      pageSize: 10,
+      pageIndex: 1,
+      count: 0
     }
   },
   computed: {
-    filterList() {
-      if (this.currProject) {
-        return this.list.filter(item => {
-          return item.project_id === this.currProject
-        })
-      }
-      return this.list
-    },
+    // filterList() {
+    //   if (this.currProject) {
+    //     return this.list.filter(item => {
+    //       return item.project_id === this.currProject
+    //     })
+    //   }
+    //   return this.list
+    // },
     logArr() {
       return this.log.split('<br>')
     }
   },
+  watch: {
+    currProject(n) {
+      this.pageIndex = 1
+      this.getList()
+    }
+  },
   mounted() {
-    this.getList()
-    this.getProjectList()
     this.id = this.$route.query.id
+    // this.getList()
+    this.getProjectList()
     this.timer = setInterval(() => {
       this.getList()
     }, 10000)
@@ -130,16 +148,20 @@ export default {
   },
   methods: {
     getList() {
-      recordList().then(res => {
-        console.log(res)
+      recordList({
+        project_id: this.currProject === null ? this.id : this.currProject,
+        pageSize: this.pageSize,
+        pageIndex: this.pageIndex
+      }).then(res => {
         this.list = res.data
+        this.count = res.count
       })
     },
     goBank() {
       this.$router.back()
     },
     getProjectList() {
-      getList().then(res => {
+      getList({}).then(res => {
         this.projectList = [{
           name: '全部',
           _id: ''
@@ -155,6 +177,10 @@ export default {
         return
       }
       this.log = log
+    },
+    pageIndexChange(e) {
+      console.log(e)
+      this.getList()
     }
   }
 }
@@ -169,10 +195,10 @@ export default {
     right: 20px;
     top: 0
   }
-  .selectWrap /deep/ .el-select{
+  .selectWrap ::v-deep  .el-select{
     float: right;
   }
-  .my-dialog /deep/ .el-dialog{
+  .my-dialog ::v-deep  .el-dialog{
     min-width: 500px;
     width: 60%;
   }
@@ -181,7 +207,7 @@ export default {
     overflow: auto;
   }
   @media all and (max-width: 800px) {
-    .my-dialog /deep/ .el-dialog{
+    .my-dialog ::v-deep  .el-dialog{
       width: 90%;
       min-width: auto;
     }
