@@ -70,16 +70,16 @@
         </template>
       </el-table-column>
     </el-table>
-    <div style="margin: 20px; display: flex;align-items: center;justify-content: center">
-      <el-pagination
-        background
-        layout="total, prev, pager, next"
-        :total="count"
-        :current-page.sync="pageIndex"
-        @current-change="pageIndexChange"
-      >
-      </el-pagination>
-    </div>
+    <!--    <div style="margin: 20px; display: flex;align-items: center;justify-content: center">-->
+    <!--      <el-pagination-->
+    <!--        background-->
+    <!--        layout="total, prev, pager, next"-->
+    <!--        :total="count"-->
+    <!--        :current-page.sync="pageIndex"-->
+    <!--        @current-change="pageIndexChange"-->
+    <!--      >-->
+    <!--      </el-pagination>-->
+    <!--    </div>-->
     <el-dialog
       title="日志"
       :visible.sync="dialogVisible"

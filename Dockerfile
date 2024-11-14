@@ -16,7 +16,7 @@ RUN npm install
 COPY . .
 
 # 打包构建
-RUN npm run build
+RUN npm run build:prod
 
 # 将构建后的代码复制到 nginx 镜像中
 FROM nginx:latest
