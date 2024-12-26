@@ -6,13 +6,14 @@
       <el-button class="addButton" size="small" @click="openAdd('add')">添加项目</el-button>
     </div>
     <el-table
+      border
       :data="list"
-      style="width: 1200px;margin: 20px auto;"
+      style="width: 100%;margin: 20px auto;"
     >
       <el-table-column
         prop="name"
         label="项目名称"
-        width="140"
+        width="220"
       >
         <template slot-scope="scope">
           <span class="projectName" @click="goRecord(scope.row._id)">{{ scope.row.name }}</span>
@@ -25,9 +26,15 @@
       >
       </el-table-column>
       <el-table-column
+        prop="ip"
+        label="部署服务器"
+        width="120"
+      >
+      </el-table-column>
+      <el-table-column
         prop="path"
         label="部署目录"
-        width="120"
+        width="360"
       >
       </el-table-column>
       <el-table-column
@@ -48,6 +55,7 @@
       </el-table-column>
       <el-table-column
         label="操作"
+        width="240"
       >
         <template slot-scope="scope">
           <!--          <el-button size="mini">clone</el-button>-->
@@ -204,16 +212,22 @@ export default {
       }
     }
   },
-  mounted() {
+  async mounted() {
+    await this.getServerList()
     this.getList()
-    this.getServerList()
   },
   methods: {
+    getServerIp(id) {
+      return this.serverList.find(item => item._id === id).ip
+    },
     getList() {
       getList().then(res => {
         console.log(res)
         if (res.code === 0) {
-          this.list = res.data
+          this.list = res.data.map ? res.data.map(item => {
+            item.ip = this.getServerIp(item.server)
+            return item
+          }) : []
         }
       })
     },
@@ -374,10 +388,16 @@ export default {
       })
     },
     getServerList() {
-      getServerList().then(res => {
-        if (res.code === 0) {
-          this.serverList = res.data
-        }
+      return new Promise((resolve, reject) => {
+        getServerList().then(res => {
+          if (res.code === 0) {
+            this.serverList = res.data
+            resolve()
+          }
+          reject()
+        }).catch(e => {
+          reject(e)
+        })
       })
     },
     submitShell() {
