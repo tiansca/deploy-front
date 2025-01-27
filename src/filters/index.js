@@ -51,11 +51,26 @@ const timeFilter = (msg, digits = 2) => {
   if (!isNaN(parseInt(msg)) && msg != 0) {
     const timeObj = new Date(msg)
     const year = timeObj.getFullYear()
-    const month = timeObj.getMonth() + 1
-    const date = timeObj.getDate()
-    const hour = timeObj.getHours()
-    const minute = timeObj.getMinutes()
-    const second = timeObj.getSeconds()
+    let month = timeObj.getMonth() + 1
+    let date = timeObj.getDate()
+    let hour = timeObj.getHours()
+    let minute = timeObj.getMinutes()
+    let second = timeObj.getSeconds()
+    if (month >= 1 && month <= 9) {
+      month = '0' + month
+    }
+    if (date >= 1 && date <= 9) {
+      date = '0' + date
+    }
+    if (hour >= 0 && hour <= 9) {
+      hour = '0' + hour
+    }
+    if (minute >= 0 && minute <= 9) {
+      minute = '0' + minute
+    }
+    if (second >= 0 && second <= 9) {
+      second = '0' + second
+    }
     return year + '-' + month + '-' + date + ' ' + hour + ':' + minute + ':' + second
   } else if (msg || msg === 0) {
     return msg

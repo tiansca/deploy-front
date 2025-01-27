@@ -55,13 +55,14 @@
       </el-table-column>
       <el-table-column
         label="操作"
-        width="240"
+        width="300"
       >
         <template slot-scope="scope">
           <!--          <el-button size="mini">clone</el-button>-->
-          <el-button size="mini" type="success" @click="deploy(scope.row)">部署</el-button>
-          <el-button size="mini" type="primary" @click="openAdd('edit', scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="removeProject(scope.row._id)">删除</el-button>
+          <el-button size="mini" type="success" title="启动部署流程" @click="deploy(scope.row)">部署</el-button>
+          <el-button size="mini" type="primary" title="编辑项目" @click="openAdd('edit', scope.row)">编辑</el-button>
+          <el-button :loading="scope.row.cloneLoading" size="mini" type="warning" title="重新从git克隆项目，更改项目地址或者本地目录后需要手动触发项目重新克隆" @click="cloneProject(scope.row)">克隆</el-button>
+          <el-button size="mini" type="danger" title="删除项目部署信息" @click="removeProject(scope.row._id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -71,10 +72,11 @@
       :visible.sync="showAdd"
       custom-class="addDialog"
       :before-close="handleClose"
+      :close-on-click-modal="false"
     >
       <el-form ref="form" style="width: 800px; margin: auto" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="项目名称" prop="name">
-          <el-input v-model="form.name" placeholder="若想自动部署，则必须将项目名称与git项目名保持一致"></el-input>
+          <el-input v-model="form.name" placeholder="若要开启自动部署，则必须将项目名称与git项目名保持一致"></el-input>
         </el-form-item>
         <el-form-item label="项目地址" prop="url">
           <el-input v-model="form.url"></el-input>
@@ -93,7 +95,7 @@
         </el-form-item>
         <el-form-item label="部署服务器" prop="server" class="inline">
           <el-select v-model="form.server" placeholder="请选择服务器">
-            <el-option v-for="item in serverList" v-show="item.status" :key="item._id" :value="item._id" :label="item.name"></el-option>
+            <el-option v-for="item in serverList" v-show="item.status" :key="item._id" :value="item._id" :label="item.name + '(' + item.ip + ')'"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="本地目录" class="inline" prop="localPath" title="本地项目文件夹名称，为空则用项目名称">
@@ -118,8 +120,17 @@
         </div>
         <div v-else>
           <el-form-item label="部署脚本" prop="buildShell">
+            <template #label>
+              <span>部署脚本</span>
+              <el-tooltip class="item" effect="dark" placement="top">
+                <i class="el-icon-info"></i>
+                <div slot="content">
+                  <p>部署脚本为打包构建脚本，则执行完成后，若设置了产出物路径，会自动将产出物路径下的文件复制到部署路径下</p>
+                </div>
+              </el-tooltip>
+            </template>
             <div>
-              <el-button v-if="buildShellContent && !buildEdit" type="primary" size="mini" @click="buildEdit=true;editType='update'">编辑</el-button>
+              <el-button v-if="buildShellContent && !buildEdit" type="primary" size="mini" @click="buildEdit=true;startEdit=false;editType='update'">编辑</el-button>
               <el-button v-if="buildEdit" size="mini" @click="buildEdit=false">取消</el-button>
               <el-button v-if="buildEdit" size="mini" type="primary" @click="submitShell">保存</el-button>
               <el-button v-if="!buildShellContent && !buildEdit" size="mini" type="primary" @click="addBuildShell">添加脚本</el-button>
@@ -127,9 +138,18 @@
             <el-input v-if="buildEdit" v-model="buildShellContent" type="textarea" rows="10"></el-input>
             <div v-else-if="buildShellContent"><pre style="white-space: break-spaces" v-html="buildShellContent"></pre></div>
           </el-form-item>
-          <el-form-item label="启动脚本" prop="startShell">
+          <el-form-item v-if="form.server !== '0'" label="启动脚本" prop="startShell">
+            <template #label>
+              <span>启动脚本</span>
+              <el-tooltip class="item" effect="dark" placement="top">
+                <i class="el-icon-info"></i>
+                <div slot="content">
+                  <p>部署脚本执行完成后，会自动在远程服务器的部署路径下执行启动脚本</p>
+                </div>
+              </el-tooltip>
+            </template>
             <div>
-              <el-button v-if="startShellContent && !startEdit" type="primary" size="mini" @click="startEdit=true;startEditType='update'">编辑</el-button>
+              <el-button v-if="startShellContent && !startEdit" type="primary" size="mini" @click="startEdit=true;buildEdit=false;startEditType='update'">编辑</el-button>
               <el-button v-if="startEdit" size="mini" @click="startEdit=false">取消</el-button>
               <el-button v-if="startEdit" size="mini" type="primary" @click="submitStartShell">保存</el-button>
               <el-button v-if="!startShellContent && !startEdit" size="mini" type="primary" @click="addStartShell">添加脚本</el-button>
@@ -157,7 +177,7 @@ import {
   updateProject,
   removeProject,
   getServerList,
-  addShellApi, updateShellApi, getShellApi
+  addShellApi, updateShellApi, getShellApi, getServerIpApi, cloneProjectApi
 } from '@/api/deploy.js'
 export default {
   name: 'Dashboard',
@@ -171,7 +191,7 @@ export default {
         branch: '',
         path: '',
         localPath: '',
-        server: '',
+        server: '0',
         build: 'npm run build',
         outputDir: 'dist',
         tagPrefixes: '',
@@ -196,7 +216,8 @@ export default {
       editType: 'update', // 编辑类型update/add
       startShellContent: '',
       startEdit: false,
-      startEditType: 'update' // 编辑类型update/add
+      startEditType: 'update', // 编辑类型update/add
+      serverLocalIp: ''
     }
   },
   computed: {
@@ -206,19 +227,34 @@ export default {
         url: [{ required: true, message: '请输入项目地址', trigger: 'blur' }],
         eventType: [{ required: true, message: '请选择响应事件', trigger: 'change' }],
         branch: [{ required: this.form.eventType === 'push', message: '请输入项目分支', trigger: 'blur' }],
-        path: [{ required: this.form.buildMode === 'npm', message: '请输入部署路径', trigger: 'blur' }],
+        path: [{ required: true, message: '请输入部署路径', trigger: 'blur' }],
         // buildShell: [{ required: this.form.buildMode === 'shell', message: '请添加构建脚本', trigger: 'blur' }],
         server: [{ required: true, message: '请选择服务器', trigger: 'blur' }]
+      }
+    },
+    currServer() {
+      return this.form.server
+    }
+  },
+  watch: {
+    currServer(n) {
+      if (n === '0') {
+        this.form.startShell = ''
       }
     }
   },
   async mounted() {
+    await this.getServerLocalIp()
     await this.getServerList()
     this.getList()
   },
   methods: {
     getServerIp(id) {
-      return this.serverList.find(item => item._id === id).ip
+      const serverInfo = this.serverList.find(item => item._id === id)
+      if (!serverInfo) {
+        return ''
+      }
+      return serverInfo.ip
     },
     getList() {
       getList().then(res => {
@@ -241,7 +277,12 @@ export default {
         this.$message.error('切换失败！')
       })
     },
-    deploy(project) {
+    async deploy(project) {
+      await this.$confirm('确定要部署吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'success'
+      })
       deploy({
         id: project._id
       }).then(res => {
@@ -330,14 +371,17 @@ export default {
         branch: '',
         path: '',
         localPath: '',
-        server: '',
+        server: '0',
         build: 'npm run build',
         outputDir: 'dist',
         tagPrefixes: '',
         buildMode: 'npm',
         eventType: 'push',
-        buildShell: '' // 构建脚本
+        buildShell: '', // 构建脚本
+        startShell: ''
       }
+      this.buildShellContent = ''
+      this.startShellContent = ''
     },
     updateProject() {
       console.log(this.form)
@@ -358,7 +402,7 @@ export default {
       this.$confirm('确定要删除该项目信息吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'error'
       }).then(() => {
         removeProject({
           id: id
@@ -391,7 +435,12 @@ export default {
       return new Promise((resolve, reject) => {
         getServerList().then(res => {
           if (res.code === 0) {
-            this.serverList = res.data
+            this.serverList = [{
+              _id: '0',
+              name: '本机',
+              ip: this.serverLocalIp,
+              status: true
+            }].concat(res.data)
             resolve()
           }
           reject()
@@ -429,10 +478,12 @@ export default {
     },
     addBuildShell() {
       this.buildEdit = true
+      this.startEdit = false
       this.editType = 'add'
     },
     addStartShell() {
       this.startEdit = true
+      this.buildEdit = false
       this.startEditType = 'add'
     },
     submitStartShell() {
@@ -452,7 +503,7 @@ export default {
         })
       } else {
         updateShellApi({
-          name: this.form.buildShell,
+          name: this.form.startShell,
           content: this.startShellContent
         }).then(res => {
           this.$message.success(res.msg)
@@ -461,6 +512,39 @@ export default {
           this.$message.error(err.msg)
         })
       }
+    },
+    async getServerLocalIp() {
+      const res = await getServerIpApi()
+      console.log(res)
+      if (res.code === 0) {
+        this.serverLocalIp = res.data.ip
+      }
+    },
+    async cloneProject(row) {
+      // 确认
+      await this.$confirm('确定要重新克隆该项目吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+      let resMessage = ''
+      let resType = ''
+      this.$set(row, 'cloneLoading', true)
+      try {
+        const { data } = await cloneProjectApi({ id: row._id })
+        if (data.name && data.localPath) {
+          resMessage = `项目“${data.name}”克隆成功，本地目录：“${data.localPath}”`
+          resType = 'success'
+        }
+      } catch (e) {
+        resMessage = e.error || e.message || e || '克隆失败'
+        resType = 'error'
+      }
+      this.$message({
+        message: resMessage,
+        type: resType
+      })
+      this.$set(row, 'cloneLoading', false)
     }
   }
 }

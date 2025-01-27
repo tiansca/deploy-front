@@ -65,6 +65,7 @@
       :visible.sync="showAdd"
       width="650px"
       :before-close="handleClose"
+      :close-on-click-modal="false"
     >
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="服务器名称" class="inline" prop="name">

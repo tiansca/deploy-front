@@ -117,3 +117,20 @@ export function getShellApi(params) {
   })
 }
 
+// 获取服务端ip
+export function getServerIpApi(params) {
+  return request({
+    url: 'get_server_ip',
+    method: 'get',
+    params
+  })
+}
+
+// 克隆项目
+export function cloneProjectApi(params) {
+  return request({
+    url: 'clone_project',
+    method: 'get',
+    params
+  })
+}

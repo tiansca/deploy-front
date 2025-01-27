@@ -4,7 +4,7 @@
       <h3 style="text-align: center">部署记录</h3>
       <el-button class="addButton" size="small" @click="goBank">返回</el-button>
     </div>
-    <div class="selectWrap" style="margin: 30px auto 10px;height: 30px;width: 900px">
+    <div class="selectWrap" style="margin: 30px auto 10px;height: 30px;width: 1200px">
       <el-select
         v-model="currProject"
         value="currProject"
@@ -22,18 +22,19 @@
     </div>
     <el-table
       :data="list"
-      style="width: 900px;margin: 20px auto;"
+      style="width: 1200px;margin: 20px auto;"
+      border
     >
       <el-table-column
         prop="name"
         label="项目名称"
-        width="120"
+        width="180"
       >
       </el-table-column>
       <el-table-column
         prop="branch"
         label="项目分支"
-        width="120"
+        width="100"
       >
       </el-table-column>
       <el-table-column
@@ -41,6 +42,9 @@
         label="服务器地址"
         width="120"
       >
+        <template slot-scope="scope">
+          {{ scope.row.ip || '本机' }}
+        </template>
       </el-table-column>
       <el-table-column
         prop="path"
@@ -50,6 +54,7 @@
       <el-table-column
         prop="createAt"
         label="部署时间"
+        width="180"
       >
         <template slot-scope="scope">
           {{ scope.row.shijian | timeFilter }}
@@ -57,6 +62,7 @@
       </el-table-column>
       <el-table-column
         label="状态"
+        width="80"
       >
         <template slot-scope="scope">
           {{ scope.row.success ? '成功' : '失败' }}
@@ -64,9 +70,10 @@
       </el-table-column>
       <el-table-column
         label="日志"
+        width="120"
       >
         <template slot-scope="scope">
-          <span @click="showLog(scope.row.log)">点击查看</span>
+          <el-link type="primary" @click="showLog(scope.row.log)">点击查看</el-link>
         </template>
       </el-table-column>
     </el-table>
@@ -84,6 +91,7 @@
       title="日志"
       :visible.sync="dialogVisible"
       class="my-dialog"
+      :close-on-click-modal="false"
     >
       <div class="log-box">
         <p v-for="(item, index) in logArr" :key="index" style="margin: 8px 0">{{ item }}</p>
@@ -176,7 +184,8 @@ export default {
       if (!log) {
         return
       }
-      this.log = log
+      // 将 \n 转换为 <br>
+      this.log = log.replace(/\n/g, '<br>')
     },
     pageIndexChange(e) {
       console.log(e)
@@ -201,6 +210,7 @@ export default {
   .my-dialog ::v-deep  .el-dialog{
     min-width: 500px;
     width: 60%;
+    margin-top: 50px!important;
   }
   .log-box{
     max-height: calc(100vh - 300px);
