@@ -94,6 +94,15 @@
           <el-input v-model="form.tagPrefixes" placeholder="若为空则响应所有tag"></el-input>
         </el-form-item>
         <el-form-item label="部署服务器" prop="server" class="inline">
+          <template #label>
+            <span>部署服务器</span>
+            <el-tooltip class="item" effect="dark" placement="top">
+              <i class="el-icon-info"></i>
+              <div slot="content">
+                <p>本机指的是当前项目所在的环境，若为docker部署，则本机指的是docker容器，并非宿主机</p>
+              </div>
+            </el-tooltip>
+          </template>
           <el-select v-model="form.server" placeholder="请选择服务器">
             <el-option v-for="item in serverList" v-show="item.status" :key="item._id" :value="item._id" :label="item.name + '(' + item.ip + ')'"></el-option>
           </el-select>
@@ -104,8 +113,8 @@
         <el-form-item label="产出物路径" class="inline" prop="outputDir" title="构建文件的相对路径">
           <el-input v-model="form.outputDir" placeholder="构建文件的相对路径"></el-input>
         </el-form-item>
-        <el-form-item label="部署路径" class="inline" prop="path" title="远程绝对路径">
-          <el-input v-model="form.path" placeholder="远程服务器部署目录"></el-input>
+        <el-form-item label="部署路径" class="inline" prop="path" title="绝对路径">
+          <el-input v-model="form.path" placeholder="服务器部署目录"></el-input>
         </el-form-item>
         <el-form-item label="构建模式" prop="buildMode" class="inline">
           <el-radio-group v-model="form.buildMode">
