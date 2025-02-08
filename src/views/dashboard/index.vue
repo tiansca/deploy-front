@@ -14,6 +14,7 @@
         prop="name"
         label="项目名称"
         width="220"
+        show-overflow-tooltip
       >
         <template slot-scope="scope">
           <span class="projectName" @click="goRecord(scope.row._id)">{{ scope.row.name }}</span>
@@ -23,23 +24,27 @@
         prop="branch"
         label="项目分支"
         width="120"
+        show-overflow-tooltip
       >
       </el-table-column>
       <el-table-column
         prop="ip"
         label="部署服务器"
-        width="120"
+        width="180"
+        show-overflow-tooltip
       >
       </el-table-column>
       <el-table-column
         prop="path"
         label="部署目录"
         width="360"
+        show-overflow-tooltip
       >
       </el-table-column>
       <el-table-column
         prop="url"
         label="git地址"
+        show-overflow-tooltip
       >
       </el-table-column>
       <el-table-column
@@ -99,7 +104,7 @@
             <el-tooltip class="item" effect="dark" placement="top">
               <i class="el-icon-info"></i>
               <div slot="content">
-                <p>本机指的是当前项目所在的环境，若为docker部署，则本机指的是docker容器，并非宿主机</p>
+                <p>本机指的是当前构建系统所在的环境，并非用户终端设备。若构建系统为docker部署，则本机指的是docker容器，并非宿主机</p>
               </div>
             </el-tooltip>
           </template>
@@ -263,7 +268,7 @@ export default {
       if (!serverInfo) {
         return ''
       }
-      return serverInfo.ip
+      return `${serverInfo.name}(${serverInfo.ip})`
     },
     getList() {
       getList().then(res => {

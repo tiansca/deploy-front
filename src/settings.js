@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '前端项目部署',
+  title: '项目构建部署',
 
   /**
    * @type {boolean} true | false
