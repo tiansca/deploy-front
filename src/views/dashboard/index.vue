@@ -139,7 +139,7 @@
               <el-tooltip class="item" effect="dark" placement="top">
                 <i class="el-icon-info"></i>
                 <div slot="content">
-                  <p>部署脚本为打包构建脚本，则执行完成后，若设置了产出物路径，会自动将产出物路径下的文件复制到部署路径下</p>
+                  <p>部署脚本为打包构建脚本，若设置了产出物路径，部署脚本执行完毕后，会自动将产出物路径下的文件复制到部署路径下</p>
                 </div>
               </el-tooltip>
             </template>
@@ -150,7 +150,7 @@
               <el-button v-if="!buildShellContent && !buildEdit" size="mini" type="primary" @click="addBuildShell">添加脚本</el-button>
             </div>
             <el-input v-if="buildEdit" v-model="buildShellContent" type="textarea" rows="10"></el-input>
-            <div v-else-if="buildShellContent"><pre style="white-space: break-spaces" v-html="buildShellContent"></pre></div>
+            <div v-else-if="buildShellContent"><pre style="white-space: break-spaces; line-height: 1.5;background-color: #efefef;padding: 8px" v-html="buildShellContent"></pre></div>
           </el-form-item>
           <el-form-item v-if="form.server !== '0'" label="启动脚本" prop="startShell">
             <template #label>
@@ -169,7 +169,7 @@
               <el-button v-if="!startShellContent && !startEdit" size="mini" type="primary" @click="addStartShell">添加脚本</el-button>
             </div>
             <el-input v-if="startEdit" v-model="startShellContent" type="textarea" rows="10"></el-input>
-            <div v-else-if="startShellContent"><pre style="white-space: break-spaces" v-html="startShellContent"></pre></div>
+            <div v-else-if="startShellContent"><pre style="white-space: break-spaces; line-height: 1.5;background-color: #efefef; padding: 8px" v-html="startShellContent"></pre></div>
           </el-form-item>
         </div>
 
@@ -422,7 +422,9 @@ export default {
           id: id
         }).then(res => {
           this.$message.success(res.msg)
-          this.getList()
+          setTimeout(() => {
+            this.getList()
+          }, 500)
         })
       }).catch(() => {
         this.$message({
@@ -601,6 +603,10 @@ export default {
     width: 100%;
     height: 100vh;
     margin: 0!important;
+    & > .el-dialog__body{
+      max-height: calc(100vh - 136px);
+      overflow: auto;
+    }
   }
   ::v-deep .dialog-footer{
     width: 800px;
