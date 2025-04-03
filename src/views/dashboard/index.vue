@@ -2,6 +2,7 @@
   <div class="dashboard-container">
     <div style="position: relative">
       <h3 style="text-align: center">项目列表</h3>
+      <el-button class="goTask" size="small" @click="goTask">任务队列</el-button>
       <el-button class="goServer" size="small" @click="goServer">服务器列表</el-button>
       <el-button class="addButton" size="small" @click="openAdd('add')">添加项目</el-button>
     </div>
@@ -575,6 +576,11 @@ export default {
       this.$nextTick(() => {
         this.$refs['form'].clearValidate()
       })
+    },
+    goTask() {
+      this.$router.push({
+        path: '/task'
+      })
     }
   }
 }
@@ -606,7 +612,12 @@ export default {
   }
   .goServer{
     position: absolute;
-    right: 120px;
+    right: 110px;
+    top: 0
+  }
+  .goTask{
+    position: absolute;
+    right: 210px;
     top: 0
   }
   .projectName:hover{

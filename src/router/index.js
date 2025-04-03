@@ -57,6 +57,13 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/task',
+    component: () => import('@/views/record/task.vue'),
+    // redirect: '/company_list',
+    name: 'task',
+    hidden: true
+  },
+  {
     path: '/server',
     component: () => import('@/views/server/index'),
     // redirect: '/company_list',
