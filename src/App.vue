@@ -1,16 +1,31 @@
 <template>
   <div id="app">
     <router-view />
+    <div class="info">
+      <el-tooltip>
+        <template #content>
+          <span>webhook地址：{{ webhook }}</span>
+        </template>
+        <el-icon class="el-icon-info" />
+      </el-tooltip>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'App',
+  data() {
+    return {
+      webhook: ''
+    }
+  },
   created() {
     window.addEventListener('resize', () => {
       this.$store.commit('app/SET_BODYWIDTH', document.body.clientWidth)
     }, false)
+    // 获取url域名
+    this.webhook = `${location.origin}/api/deploy`
   }
 }
 </script>
@@ -107,5 +122,15 @@ body{
 .my-alart-button:active {
   background-color: #0056B2!important;
   border: 0;
+}
+</style>
+<style lang="scss" scoped>
+.info{
+  position: fixed;
+  top: 26px;
+  right: 12px;
+}
+.el-icon-info{
+  cursor: pointer;
 }
 </style>

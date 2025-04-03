@@ -49,8 +49,8 @@
       </el-table-column>
       <el-table-column
         prop="status"
-        label="是否自动部署"
-        width="120"
+        label="自动部署"
+        width="80"
       >
         <template slot-scope="scope">
           <el-tag size="small" :type="scope.row.status ? 'success' : 'warning'" style="cursor: pointer" @click="changeStatus(scope.row)">
@@ -60,10 +60,11 @@
       </el-table-column>
       <el-table-column
         label="操作"
-        width="300"
+        width="360"
       >
         <template slot-scope="scope">
           <!--          <el-button size="mini">clone</el-button>-->
+          <el-button size="mini" title="复制项目部署任务" @click="copyProject(scope.row)">复制</el-button>
           <el-button size="mini" type="success" title="启动部署流程" @click="deploy(scope.row)">部署</el-button>
           <el-button size="mini" type="primary" title="编辑项目" @click="openAdd('edit', scope.row)">编辑</el-button>
           <el-button :loading="scope.row.cloneLoading" size="mini" type="warning" title="重新从git克隆项目，更改项目地址或者本地目录后需要手动触发项目重新克隆" @click="cloneProject(scope.row)">克隆</el-button>
@@ -548,8 +549,8 @@ export default {
       this.$set(row, 'cloneLoading', true)
       try {
         const { data } = await cloneProjectApi({ id: row._id })
-        if (data.name && data.localPath) {
-          resMessage = `项目“${data.name}”克隆成功，本地目录：“${data.localPath}”`
+        if (data.name) {
+          resMessage = `项目“${data.name}”克隆成功，本地目录：“${data.localPath || data.name}”`
           resType = 'success'
         }
       } catch (e) {
@@ -561,6 +562,19 @@ export default {
         type: resType
       })
       this.$set(row, 'cloneLoading', false)
+    },
+    copyProject(row) {
+      const keys = Object.keys(this.form)
+      for (let i = 0; i < keys.length; i++) {
+        if (row[keys[i]]) {
+          this.form[keys[i]] = row[keys[i]]
+        }
+      }
+      this.addType = 'add'
+      this.showAdd = true
+      this.$nextTick(() => {
+        this.$refs['form'].clearValidate()
+      })
     }
   }
 }
