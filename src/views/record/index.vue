@@ -61,6 +61,15 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="triggerBy"
+        label="部署人"
+        width="100"
+      >
+        <template slot-scope="scope">
+          <span>{{ scope.row.triggerBy === 'git' ? 'git触发' : scope.row.triggerBy }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
         label="状态"
         width="80"
       >

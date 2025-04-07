@@ -72,17 +72,12 @@ export const constantRoutes = [
   },
   {
     path: '/user',
-    redirect: '/user/detail',
-    component: Layout,
+    component: () => import('@/views/user/user.vue'),
     hidden: true,
-    children: [{
-      path: 'detail',
-      name: 'detail',
-      component: () => import('@/views/user/user'),
-      meta: {
-        title: '个人信息'
-      }
-    }]
+    name: 'User',
+    meta: {
+      title: '用户管理'
+    }
   }
 ]
 

@@ -34,6 +34,7 @@ export default {
           if (data.type === 'taskList') {
             this.waitTask = data.tasks
             this.currTask = data.activeTask
+            this.$set(this, 'currTask', data.activeTask)
           } else if (data.type === 'log') {
             this.$nextTick(() => {
               this.logContent += data.log
@@ -87,21 +88,22 @@ export default {
       <div class="curr-task">
         <div class="curr-task-info-head">
           <span class="curr-task-info-title">当前任务</span>
-          <span class="curr-stop" title="停止当前任务" @click="stopCurr">
+          <span v-if="currTask" class="curr-stop" title="停止当前任务" @click="stopCurr">
             <svg style="width: 1em; height: 1em">
               <use xlink:href="#deploy-stop" />
             </svg>
           </span>
+          <span v-else class="curr-stop" style="font-size: 12px">已结束</span>
         </div>
         <div class="curr-task-info-wrap">
           <span class="info-label">名称:</span>
-          <span class="info-value">{{ currTask.name || '-' }}</span>
+          <span class="info-value">{{ currTask ? currTask.name || '-' : '-' }}</span>
           <span class="info-label">branch/tag:</span>
-          <span class="info-value">{{ currTask.branch || currTask.tagName || '-' }}</span>
+          <span class="info-value">{{ currTask ? currTask.branch || currTask.tagName : '-' }}</span>
           <span class="info-label">服务器:</span>
-          <span class="info-value">{{ currTask.ip || '本机部署' || '-' }}</span>
+          <span class="info-value">{{ currTask ? currTask.ip || '本机部署' || '-' : '-' }}</span>
           <span class="info-label">部署路径:</span>
-          <span class="info-value" style="flex-grow: 3;">{{ currTask.path || '-' }}</span>
+          <span class="info-value" style="flex-grow: 3;">{{ currTask ? currTask.path || '-' : '-' }}</span>
         </div>
       </div>
       <div class="curr-log">

@@ -2,9 +2,17 @@
   <div class="dashboard-container">
     <div style="position: relative">
       <h3 style="text-align: center">项目列表</h3>
+      <el-button class="goUser" size="small" @click="goUser">用户管理</el-button>
       <el-button class="goTask" size="small" @click="goTask">任务队列</el-button>
       <el-button class="goServer" size="small" @click="goServer">服务器列表</el-button>
       <el-button class="addButton" size="small" type="primary" @click="openAdd('add')">添加项目</el-button>
+      <el-button type="text" class="logout-button" @click="logout">
+        <el-tooltip class="item" effect="dark" content="退出登录">
+          <svg style="width: 1em; height: 1em; font-size: 20px">
+            <use xlink:href="#deploy-logout" />
+          </svg>
+        </el-tooltip>
+      </el-button>
     </div>
     <el-table
       border
@@ -581,6 +589,20 @@ export default {
       this.$router.push({
         path: '/task'
       })
+    },
+    async logout() {
+      await this.$msgbox.confirm('确定要退出登录吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login`)
+    },
+    goUser() {
+      this.$router.push({
+        path: '/user'
+      })
     }
   }
 }
@@ -610,9 +632,19 @@ export default {
     right: 20px;
     top: 0
   }
+  .logout-button{
+    position: absolute;
+    left: 0px;
+    top: 0
+  }
   .goServer{
     position: absolute;
     right: 110px;
+    top: 0
+  }
+  .goUser{
+    position: absolute;
+    right: 300px;
     top: 0
   }
   .goTask{

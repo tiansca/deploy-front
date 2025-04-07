@@ -1,13 +1,13 @@
 import axios from 'axios'
-import { MessageBox } from 'element-ui'
+import { Message, MessageBox } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 // import { getInfo } from '@/api/user.js'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API // url = base url + request url
-  // withCredentials: true // send cookies when cross-domain requests
+  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  withCredentials: true // send cookies when cross-domain requests
   // timeout: 5000 // request timeout
 })
 
@@ -69,11 +69,12 @@ service.interceptors.response.use(
 
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 0) {
-      // Message({
-      //   message: res.error || '加载失败',
-      //   type: 'error',
-      //   duration: 5 * 1000
-      // })
+      console.log(res)
+      Message({
+        message: res.error || res.msg || res.err || res.message || '加载失败',
+        type: 'error',
+        duration: 3 * 1000
+      })
       const time = (new Date()).valueOf()
       if (time - oldTime > 1000) {
         oldTime = time

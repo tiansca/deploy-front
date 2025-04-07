@@ -46,9 +46,9 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { key, password } = userInfo
+    const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ key: key.trim(), password: password }).then(response => {
+      login({ username: username.trim(), password: password }).then(response => {
         // const { data } = response
         commit('SET_TOKEN', 'dataToken')
         setToken('dataToken')
@@ -76,25 +76,6 @@ const actions = {
             return item.name
           }))
         }
-        const pageActions = new Set()
-        data.actions.forEach(item => {
-          if (item.type === 'page') {
-            pageActions.add(item.key)
-          }
-        })
-        data.roleActions.forEach(item => {
-          if (item.type === 'page') {
-            pageActions.add(item.key)
-          }
-        })
-        const partialArea = []
-        data.roleActions.forEach(item => {
-          if (item.type === 'partialArea') {
-            partialArea.push(item.key)
-          }
-        })
-        commit('PAGE_AREA', partialArea)
-        data.pageActions = Array.from(pageActions)
         return Promise.resolve(data)
       }
       const userInfo = await getInfo()
@@ -102,23 +83,6 @@ const actions = {
       if (data.id) {
         commit('SET_USER_ID', data.id)
       }
-      const pageActions = new Set()
-      data.actions.forEach(item => {
-        if (item.type === 'page') {
-          pageActions.add(item.key)
-        }
-      })
-      data.roleActions.forEach(item => {
-        if (item.type === 'page') {
-          pageActions.add(item.key)
-        }
-      })
-      // commit('SET_PAGE_ACTIONS', Array.from(pageActions))
-      data.pageActions = Array.from(pageActions)
-      // data.authority = pageActions.has('merchantSystem')
-      // 判断有无驾驶舱权限
-      // console.log('写入', data.authority)
-      // commit('SET_AUTHORITY', data.authority)
       sessionStorage.setItem('userInfo', JSON.stringify(data))
       return Promise.resolve(data)
     } catch (error) {

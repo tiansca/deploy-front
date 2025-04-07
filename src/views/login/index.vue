@@ -7,7 +7,7 @@
       <div class="login-right">
         <div class="login-flex">
           <div class="title-container">
-            <h3 class="title">测试项目部署</h3>
+            <h3 class="title">项目构建部署</h3>
           </div>
 
           <el-form-item prop="key">
@@ -113,8 +113,8 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', {
-            key: this.loginForm.key,
-            password: encryptPassword(this.loginForm.password)
+            username: this.loginForm.key,
+            password: this.loginForm.password
           }).then(async() => {
             // 获取用户信息
             await this.$store.dispatch('user/getInfo')
