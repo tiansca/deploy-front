@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <div style="position: relative">
       <h3 style="text-align: center">部署记录</h3>
-      <el-button class="addButton" size="small" @click="goBank">返回</el-button>
+      <el-button class="back-button" size="small" type="text" icon="el-icon-back" @click="goBank">返回</el-button>
     </div>
     <div class="selectWrap" style="margin: 30px auto 10px;height: 30px;width: 1200px">
       <el-select
@@ -199,9 +199,9 @@ export default {
   .dashboard-container{
     padding: 20px;
   }
-  .addButton{
+  .back-button{
     position: absolute;
-    right: 20px;
+    left: 20px;
     top: 0
   }
   .selectWrap ::v-deep  .el-select{

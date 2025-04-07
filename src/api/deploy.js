@@ -134,3 +134,20 @@ export function cloneProjectApi(params) {
     params
   })
 }
+
+// 停止当前项目
+export function stopCurrTaskApi(params) {
+  return request({
+    url: 'stop_curr',
+    method: 'get',
+    params
+  })
+}
+// 取消指定任务
+export function cancelTaskApi(params) {
+  return request({
+    url: 'cancel_task',
+    method: 'get',
+    params
+  })
+}

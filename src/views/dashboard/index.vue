@@ -4,7 +4,7 @@
       <h3 style="text-align: center">项目列表</h3>
       <el-button class="goTask" size="small" @click="goTask">任务队列</el-button>
       <el-button class="goServer" size="small" @click="goServer">服务器列表</el-button>
-      <el-button class="addButton" size="small" @click="openAdd('add')">添加项目</el-button>
+      <el-button class="addButton" size="small" type="primary" @click="openAdd('add')">添加项目</el-button>
     </div>
     <el-table
       border
@@ -505,8 +505,8 @@ export default {
       this.startEditType = 'add'
     },
     submitStartShell() {
-      if (!this.buildShellContent) {
-        this.$message.error('请输入构建脚本！')
+      if (!this.startShellContent) {
+        this.$message.error('请输入启动脚本内容！')
         return
       }
       if (this.startEditType === 'add' && !this.form.startShell) {

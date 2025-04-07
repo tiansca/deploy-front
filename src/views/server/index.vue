@@ -2,8 +2,8 @@
   <div class="dashboard-container">
     <div style="position: relative">
       <h3 style="text-align: center">服务器列表</h3>
-      <el-button class="goProject" size="small" @click="goProject">返回</el-button>
-      <el-button class="addButton" size="small" @click="openAdd('add')">添加服务器</el-button>
+      <el-button class="goProject" size="small" type="text" icon="el-icon-back" @click="goProject">返回</el-button>
+      <el-button class="addButton" size="small" type="primary" @click="openAdd('add')">添加服务器</el-button>
     </div>
     <el-table
       :data="list"
@@ -279,7 +279,7 @@ export default {
   }
   .goProject{
     position: absolute;
-    right: 120px;
+    left: 20px;
     top: 0
   }
   .projectName:hover{

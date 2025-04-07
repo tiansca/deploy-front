@@ -1,15 +1,24 @@
 <script>
+import { cancelTaskApi, stopCurrTaskApi } from '@/api/deploy'
+
 export default {
   name: 'Task',
   data() {
     return {
       currTask: null,
       waitTask: [],
-      logContent: ''
+      logContent: '',
+      eventSource: null
     }
   },
   mounted() {
     this.getTaskInfo()
+  },
+  beforeDestroy() {
+    // 终止sse message响应
+    if (this.eventSource) {
+      this.eventSource.close()
+    }
   },
   methods: {
     goBank() {
@@ -17,9 +26,9 @@ export default {
     },
     getTaskInfo() {
       const eventSource = new EventSource('/api/task')
-
+      this.eventSource = eventSource
       eventSource.onmessage = (event) => {
-        console.log('New message:', event.data)
+        // console.log('New message:', event.data)
         try {
           const data = JSON.parse(event.data)
           if (data.type === 'taskList') {
@@ -43,11 +52,17 @@ export default {
         // 处理错误情况
       }
     },
-    stopCurr() {
+    async stopCurr() {
       console.log('停止')
+      await stopCurrTaskApi()
+      this.$message.success('任务已停止')
     },
-    removeTask() {
-      console.log('移除')
+    async removeTask(id) {
+      console.log('移除', id)
+      await cancelTaskApi({
+        id: id
+      })
+      this.$message.success('任务已移除')
     },
     logToBottom() {
       this.$nextTick(() => {
@@ -66,9 +81,9 @@ export default {
   <div class="dashboard-container">
     <div style="position: relative">
       <h3 style="text-align: center">任务队列</h3>
-      <el-button class="addButton" size="small" @click="goBank">返回</el-button>
+      <el-button class="back-Button" size="small" type="text" icon="el-icon-back" @click="goBank">返回</el-button>
     </div>
-    <div v-if="currTask" class="task-content">
+    <div v-if="currTask || logContent" class="task-content">
       <div class="curr-task">
         <div class="curr-task-info-head">
           <span class="curr-task-info-title">当前任务</span>
@@ -106,7 +121,7 @@ export default {
           <el-table-column prop="path" label="部署路径"></el-table-column>
           <el-table-column prop="operate" label="操作" width="80">
             <template #default="scope">
-              <el-button size="mini" type="warning" @click="removeTask(scope.row.id)">取消</el-button>
+              <el-button size="mini" type="warning" @click="removeTask(scope.row._id)">取消</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -124,9 +139,9 @@ export default {
 .dashboard-container{
   padding: 20px;
 }
-.addButton{
+.back-Button{
   position: absolute;
-  right: 20px;
+  left: 20px;
   top: 0
 }
 .task-content{
@@ -161,11 +176,12 @@ export default {
     .info-value{
       margin-right: 34px;
       display: inline-block;
-      max-width: 150px;
+      //max-width: 150px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      flex-grow: 1
+      flex-grow: 1;
+      min-width: 80px;
     }
   }
   .curr-log{
