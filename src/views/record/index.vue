@@ -82,7 +82,7 @@
         width="120"
       >
         <template slot-scope="scope">
-          <el-link type="primary" @click="showLog(scope.row.log)">点击查看</el-link>
+          <el-link type="primary" @click="showLog(scope.row._id)">点击查看</el-link>
         </template>
       </el-table-column>
     </el-table>
@@ -114,7 +114,7 @@
 </template>
 
 <script>
-import { recordList, getList } from '@/api/deploy.js'
+import { recordList, getList, getRecordDetail } from '@/api/deploy.js'
 export default {
   name: 'Record',
   data() {
@@ -188,13 +188,15 @@ export default {
         this.currProject = this.id
       })
     },
-    showLog(log) {
-      this.dialogVisible = true
-      if (!log) {
-        return
+    async showLog(id) {
+      // 查询详情
+      const { data: log } = await getRecordDetail({
+        id: id
+      })
+      if (log) {
+        this.dialogVisible = true
+        this.log = log.replace(/\n/g, '<br>')
       }
-      // 将 \n 转换为 <br>
-      this.log = log.replace(/\n/g, '<br>')
     },
     pageIndexChange(e) {
       console.log(e)
@@ -211,7 +213,8 @@ export default {
   .back-button{
     position: absolute;
     left: 20px;
-    top: 0
+    top: 0;
+    padding: 4px 8px;
   }
   .selectWrap ::v-deep  .el-select{
     float: right;

@@ -268,8 +268,17 @@ export default {
     }
   },
   async mounted() {
-    await this.getServerLocalIp()
-    await this.getServerList()
+    const [res, res2] = await Promise.all([
+      getServerList(),
+      getServerIpApi()
+    ])
+    this.serverList = [{
+      _id: '0',
+      name: '本机',
+      ip: res2.data.ip,
+      status: true
+    }].concat(res.data)
+    console.log(res, res2)
     this.getList()
   },
   methods: {
@@ -461,13 +470,7 @@ export default {
       return new Promise((resolve, reject) => {
         getServerList().then(res => {
           if (res.code === 0) {
-            this.serverList = [{
-              _id: '0',
-              name: '本机',
-              ip: this.serverLocalIp,
-              status: true
-            }].concat(res.data)
-            resolve()
+            resolve(res.data)
           }
           reject()
         }).catch(e => {
@@ -544,7 +547,9 @@ export default {
       console.log(res)
       if (res.code === 0) {
         this.serverLocalIp = res.data.ip
+        return res.data.ip
       }
+      return ''
     },
     async cloneProject(row) {
       // 确认
@@ -634,8 +639,9 @@ export default {
   }
   .logout-button{
     position: absolute;
-    left: 0px;
-    top: 0
+    left: 0;
+    top: 0;
+    padding: 0;
   }
   .goServer{
     position: absolute;

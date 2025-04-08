@@ -229,7 +229,8 @@ export default {
 .back-Button{
   position: absolute;
   left: 20px;
-  top: 0
+  top: 0;
+  padding: 4px 8px;
 }
 .addButton{
   position: absolute;

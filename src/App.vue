@@ -4,7 +4,8 @@
     <div class="info">
       <el-tooltip>
         <template #content>
-          <span>webhook地址：{{ webhook }}</span>
+          <div>自动部署依赖git仓库的webhook推送</div>
+          <div>webhook地址：{{ webhook }}</div>
         </template>
         <el-icon class="el-icon-info" />
       </el-tooltip>

@@ -46,7 +46,7 @@ const NumDivide = (msg, digits = 2) => {
 }
 
 const timeFilter = (msg, digits = 2) => {
-  console.log(msg, digits)
+  // console.log(msg, digits)
   // eslint-disable-next-line eqeqeq
   if (!isNaN(parseInt(msg)) && msg != 0) {
     const timeObj = new Date(msg)

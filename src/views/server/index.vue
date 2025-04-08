@@ -280,7 +280,8 @@ export default {
   .goProject{
     position: absolute;
     left: 20px;
-    top: 0
+    top: 0;
+    padding: 4px 8px;
   }
   .projectName:hover{
     color: #2C8CF2;

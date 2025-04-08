@@ -55,6 +55,13 @@ export function recordList(params) {
     params
   })
 }
+export function getRecordDetail(params) {
+  return request({
+    url: 'record_detail',
+    method: 'get',
+    params
+  })
+}
 
 export function getServerList(params) {
   return request({
