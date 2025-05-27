@@ -2,6 +2,7 @@
   <div class="dashboard-container">
     <div style="position: relative">
       <h3 style="text-align: center">项目列表</h3>
+      <el-button class="set-robot" size="small" @click="openSetRobot">通知机器人</el-button>
       <el-button class="goUser" size="small" @click="goUser">用户管理</el-button>
       <el-button class="goTask" size="small" @click="goTask">任务队列</el-button>
       <el-button class="goServer" size="small" @click="goServer">服务器列表</el-button>
@@ -139,6 +140,12 @@
         </el-form-item>
         <div v-if="form.buildMode === 'npm'">
           <el-form-item label="打包命令" prop="build" class="inline">
+            <template #label>
+              <span>打包命令</span>
+              <el-tooltip class="item" effect="dark" placement="top" content="支持npm、yarn、pnpm命令">
+                <i class="el-icon-info"></i>
+              </el-tooltip>
+            </template>
             <el-input v-model="form.build" placeholder="请输入打包命令"></el-input>
           </el-form-item>
         </div>
@@ -189,6 +196,16 @@
         <el-button @click="closeAdd">取消</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="设置机器人" :visible.sync="setRobotDialogVisible" width="500px" :close-on-click-modal="false">
+      <div style="display: flex;align-items: center">
+        <span style="font-size: 12px;flex-shrink: 0">webhook地址：</span>
+        <el-input v-model="webhook" type="textarea" :autosize="true"></el-input>
+      </div>
+      <div style="display: flex; justify-content: center;margin-top: 20px;">
+        <el-button @click="setRobotDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="setRobot">设置</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -201,7 +218,7 @@ import {
   updateProject,
   removeProject,
   getServerList,
-  addShellApi, updateShellApi, getShellApi, getServerIpApi, cloneProjectApi
+  addShellApi, updateShellApi, getShellApi, getServerIpApi, cloneProjectApi, setWebHookApi, getWebHookApi
 } from '@/api/deploy.js'
 export default {
   name: 'Dashboard',
@@ -241,7 +258,9 @@ export default {
       startShellContent: '',
       startEdit: false,
       startEditType: 'update', // 编辑类型update/add
-      serverLocalIp: ''
+      serverLocalIp: '',
+      webhook: '',
+      setRobotDialogVisible: false
     }
   },
   computed: {
@@ -579,11 +598,16 @@ export default {
     },
     copyProject(row) {
       const keys = Object.keys(this.form)
+      /* buildShell: '', // 构建脚本
+        startShell: ''*/
+      const skipKeys = ['buildShell', 'startShell'] // 不复制脚本
       for (let i = 0; i < keys.length; i++) {
-        if (row[keys[i]]) {
+        if (row[keys[i]] && !skipKeys.includes(keys[i])) {
           this.form[keys[i]] = row[keys[i]]
         }
       }
+      this.buildShellContent = ''
+      this.startShellContent = ''
       this.addType = 'add'
       this.showAdd = true
       this.$nextTick(() => {
@@ -607,6 +631,25 @@ export default {
     goUser() {
       this.$router.push({
         path: '/user'
+      })
+    },
+    async openSetRobot() {
+      // 打开对话框
+      const res = await getWebHookApi()
+      this.setRobotDialogVisible = true
+      this.webhook = res.data.webhook || ''
+    },
+    async setRobot() {
+      const url = this.webhook || ''
+      // 调接口
+      setWebHookApi({
+        webhook: url
+      }).then(res => {
+        this.$message.success(res.msg)
+        this.setRobotDialogVisible = false
+      }).catch(err => {
+        console.log(err)
+        // this.$message.error(err.msg)
       })
     }
   }
@@ -647,6 +690,11 @@ export default {
     position: absolute;
     right: 110px;
     top: 0
+  }
+  .set-robot{
+    position: absolute;
+    right: 390px;
+    top:0
   }
   .goUser{
     position: absolute;

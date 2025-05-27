@@ -69,7 +69,7 @@
         class="demo-ruleForm"
       >
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" :disabled="form.username === 'admin' && addType === 'edit'"></el-input>
+          <el-input v-model="form.username" :disabled="addType === 'edit'"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input v-model="form.password"></el-input>

@@ -158,3 +158,21 @@ export function cancelTaskApi(params) {
     params
   })
 }
+
+// 设置webhook地址
+export function setWebHookApi(data) {
+  return request({
+    url: 'set_webhook',
+    method: 'post',
+    data
+  })
+}
+
+// 获取webhook地址
+export function getWebHookApi(params) {
+  return request({
+    url: 'get_webhook',
+    method: 'get',
+    params
+  })
+}
