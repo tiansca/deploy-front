@@ -1,4 +1,4 @@
-import { login, logout, getInfo } from '@/api/user'
+import { login, logout, getInfo, refreshTokenApi } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
@@ -9,8 +9,7 @@ const getDefaultState = () => {
     avatar: require('../../assets/imgs/login/person.png'),
     roles: [],
     id: '',
-    groupId: '',
-    partialArea: []
+    permissions: []
   }
 }
 
@@ -34,6 +33,9 @@ const mutations = {
   },
   SET_USER_ID: (state, id) => {
     state.id = id
+  },
+  SET_PERMISSIONS: (state, permissions) => {
+    state.permissions = permissions
   },
   SET_GID: (state, id) => {
     state.groupId = id
@@ -60,28 +62,40 @@ const actions = {
   },
 
   // get user info
-  async getInfo({ commit }, cache) {
+  async getInfo({ commit, dispatch }, cache) {
     try {
       if (cache) {
         const data = JSON.parse(sessionStorage.getItem('userInfo'))
-        commit('SET_NAME', data.name)
-        if (data.groupId) {
-          commit('SET_GID', data.groupId)
+        commit('SET_NAME', data.username)
+        if (data.userid) {
+          commit('SET_USER_ID', data.userid)
         }
-        if (data.id) {
-          commit('SET_USER_ID', data.id)
-        }
-        if (data.roles && data.roles.length > 0) {
-          commit('SET_ROLES', data.roles.map(item => {
+        if (data.roleList && data.roleList.length > 0) {
+          commit('SET_ROLES', data.roleList.map(item => {
             return item.name
           }))
         }
         return Promise.resolve(data)
       }
       const userInfo = await getInfo()
+      console.log('userInfo', userInfo)
       const { data } = userInfo
-      if (data.id) {
-        commit('SET_USER_ID', data.id)
+      if (data.userid) {
+        commit('SET_USER_ID', data.userid)
+        commit('SET_NAME', data.username)
+        if (data.roleList && data.roleList.length > 0) {
+          commit('SET_ROLES', data.roleList.map(item => {
+            return item.name
+          }))
+        }
+        if (data.permissionList && data.permissionList.length > 0) {
+          commit('SET_PERMISSIONS', data.permissionList.map(item => {
+            return item.key
+          }))
+        }
+      }
+      if (data.exp - Date.now() < 1000 * 60 * 60 * 24 * 2.8) {
+        dispatch('refreshToken')
       }
       sessionStorage.setItem('userInfo', JSON.stringify(data))
       return Promise.resolve(data)
@@ -125,6 +139,7 @@ const actions = {
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
+        location.reload()
         resolve()
       }).catch(error => {
         reject(error)
@@ -137,6 +152,12 @@ const actions = {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
       commit('RESET_STATE')
+      resolve()
+    })
+  },
+  refreshToken({ commit }) {
+    return new Promise(async resolve => {
+      await refreshTokenApi()
       resolve()
     })
   }

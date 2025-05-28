@@ -78,6 +78,15 @@ export const constantRoutes = [
     meta: {
       title: '用户管理'
     }
+  },
+  {
+    path: '/403',
+    component: () => import('@/views/403.vue'),
+    hidden: true,
+    name: '403',
+    meta: {
+      title: '无权限'
+    }
   }
 ]
 

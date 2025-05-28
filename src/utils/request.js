@@ -6,7 +6,7 @@ import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  baseURL: process.env['VUE_APP_AUTH_BACKEND_URL'], // url = base url + request url
   withCredentials: true // send cookies when cross-domain requests
   // timeout: 5000 // request timeout
 })
@@ -20,17 +20,11 @@ service.interceptors.request.use(
     if (config.method === 'get') {
       url.indexOf('?') === -1 ? config.url = url + '?timestamp=' + (new Date().getTime()) : config.url = url + '&timestamp=' + (new Date().getTime())
     }
-    if (store.getters.report_scoure) {
-      config.headers['authorization'] = store.getters.report_scoure
+    if (getToken()) {
+      config.headers['Authorization'] = getToken()
     }
     // do something before request is sent
     // console.log(config)
-    if (store.getters.token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
-    }
 
     // 按钮禁用
     if (config.params && config.params.button_target) {
@@ -104,7 +98,7 @@ service.interceptors.response.use(
       // }
       return Promise.reject(res)
     } else {
-      return res
+      return Promise.resolve(res)
     }
   },
   error => {
@@ -118,7 +112,8 @@ service.interceptors.response.use(
     //   })
     //   .catch((error) => {
     //     console.log(error)
-    //   })
+    //   }
+    console.log('error', error)
     return Promise.reject(error)
   }
 )

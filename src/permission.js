@@ -18,7 +18,7 @@ router.beforeEach(async(to, from, next) => {
 
   // determine whether the user has logged in
   const hasToken = getToken()
-  const userId = 'self'
+  // const userId = 'self'
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
@@ -26,23 +26,36 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     } else {
       const hasGetUserInfo = store.getters.name
+      console.log('hasGetUserInfo', hasGetUserInfo)
       if (hasGetUserInfo) {
-        next()
+        if ((store.getters.permissions && store.getters.permissions.find(permission => permission === 'deploy')) || to.path === '/403') {
+          next()
+        } else {
+          console.log('403')
+          next({ path: '/403' })
+        }
       } else {
         try {
           // 在这里挂载路由
-          store.commit('user/SET_NAME', 'cong')
-          // const { pageActions } = await store.dispatch('user/getInfo', true)
+          // store.commit('user/SET_NAME', 'cong')
+          await store.dispatch('user/getInfo', false)
           const accessRoutes = await store.dispatch('permission/generateRoutes', [])
           router.addRoutes(accessRoutes)
           next({ ...to, replace: true })
         } catch (error) {
+          debugger
           // remove token and go to login page to re-login
           await store.dispatch('user/resetToken')
           if (error.code === 4) {
             Message.error('请重新登录！')
           }
-          next(`/login?redirect=${to.fullPath}`)
+          // next(`/login?redirect=${to.fullPath}`)
+          // 获取VUE_CLI_AUTH_FRONTEND_URL环境变量
+          const VUE_CLI_AUTH_FRONTEND_URL = process.env.VUE_APP_AUTH_FRONTEND_URL
+          if (error.response && error.response.status) {
+            window.location.replace(VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + location.href)
+            console.log('111', VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + location.href)
+          }
           NProgress.done()
         }
       }
@@ -60,7 +73,10 @@ router.beforeEach(async(to, from, next) => {
       next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.
-      next(`/login?redirect=${to.fullPath}`)
+      // next(`/login?redirect=${to.fullPath}`)
+      const VUE_CLI_AUTH_FRONTEND_URL = process.env.VUE_APP_AUTH_FRONTEND_URL
+      window.location.replace(VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + location.href)
+      console.log('222', VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + location.href)
       NProgress.done()
     }
   }

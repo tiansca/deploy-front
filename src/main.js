@@ -14,6 +14,7 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import permission from '@/directive/permission/index.js'
 
 // 全局过滤器
 import * as filters from '@/filters'
@@ -41,14 +42,42 @@ Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 
-import loading from './utils/loading.js' // 引入loading
+import loading from './utils/loading.js'
+import { setToken } from '@/utils/auth' // 引入loading
 Vue.use(loading) // 全局使用loading
+Vue.use(permission)
 
 // import BaiduMap from 'vue-baidu-map'
 // Vue.use(BaiduMap, {
 //   /* 需要注册百度地图开发者来获取你的ak */
 //   ak: 'pc7ehmqoYaaEgzisn2gChqujAmELFoCq'
 // })
+
+// 解析url query中的参数
+const getQuery = () => {
+  const url = new URL(location.href)
+  const params = new URLSearchParams(url.search)
+  return Object.fromEntries(params.entries())
+}
+
+// 解析url hash中的参数
+const getHash = () => {
+  let hash = location.hash.slice(1)
+  // 删除url中的token参数
+  if (hash.indexOf('?') && hash.split('?')[1]) {
+    const paramsArray = hash.split('?')[1].split('&')
+    return paramsArray.reduce((acc, cur) => {
+      const [key, value] = cur.split('=')
+      acc[key] = value
+      if (key === 'token') {
+        hash = hash.replace(cur, '')
+        location.hash = hash
+      }
+      return acc
+    }, {})
+  }
+  return {}
+}
 
 // 调接口，判断是否为登录状态
 async function init() {
@@ -57,7 +86,21 @@ async function init() {
   // } catch (e) {
   //   console.log(e)
   // }
-  new Vue({
+  const hash = getHash()
+  if (hash && hash.token) {
+    setToken(hash.token)
+  }
+  const query = getQuery()
+  if (query && query.token) {
+    setToken(query.token)
+    // 删除token参数
+    const url = new URL(location.href)
+    const params = new URLSearchParams(url.search)
+    params.delete('token')
+    url.search = params.toString()
+    history.replaceState({}, '', url.toString())
+  }
+  var app = new Vue({
     el: '#app',
     router,
     store,

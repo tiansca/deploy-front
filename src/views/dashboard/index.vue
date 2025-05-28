@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <div style="position: relative">
       <h3 style="text-align: center">项目列表</h3>
-      <el-button class="set-robot" size="small" @click="openSetRobot">通知机器人</el-button>
+      <el-button v-permission="['deploy-robot_button']" class="set-robot" size="small" @click="openSetRobot">通知机器人</el-button>
       <el-button class="goUser" size="small" @click="goUser">用户管理</el-button>
       <el-button class="goTask" size="small" @click="goTask">任务队列</el-button>
       <el-button class="goServer" size="small" @click="goServer">服务器列表</el-button>
@@ -75,10 +75,10 @@
         <template slot-scope="scope">
           <!--          <el-button size="mini">clone</el-button>-->
           <el-button size="mini" title="复制项目部署任务" @click="copyProject(scope.row)">复制</el-button>
-          <el-button size="mini" type="success" title="启动部署流程" @click="deploy(scope.row)">部署</el-button>
-          <el-button size="mini" type="primary" title="编辑项目" @click="openAdd('edit', scope.row)">编辑</el-button>
+          <el-button v-permission="['deploy-trigger_button']" size="mini" type="success" title="启动部署流程" @click="deploy(scope.row)">部署</el-button>
+          <el-button v-permission="['deploy-project_edit_button']" size="mini" type="primary" title="编辑项目" @click="openAdd('edit', scope.row)">编辑</el-button>
           <el-button :loading="scope.row.cloneLoading" size="mini" type="warning" title="重新从git克隆项目，更改项目地址或者本地目录后需要手动触发项目重新克隆" @click="cloneProject(scope.row)">克隆</el-button>
-          <el-button size="mini" type="danger" title="删除项目部署信息" @click="removeProject(scope.row._id)">删除</el-button>
+          <el-button v-permission="['deploy-project_delete_button']" size="mini" type="danger" title="删除项目部署信息" @click="removeProject(scope.row._id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -629,9 +629,10 @@ export default {
       this.$router.push(`/login`)
     },
     goUser() {
-      this.$router.push({
-        path: '/user'
-      })
+      // this.$router.push({
+      //   path: '/user'
+      // })
+      window.open(process.env['VUE_APP_AUTH_FRONTEND_URL'])
     },
     async openSetRobot() {
       // 打开对话框

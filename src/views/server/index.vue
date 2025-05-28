@@ -54,8 +54,8 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="openAdd('edit', scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="removeProject(scope.row._id)">删除</el-button>
+          <el-button v-permission="['deploy-server_edit_button']" size="mini" type="primary" @click="openAdd('edit', scope.row)">编辑</el-button>
+          <el-button v-permission="['deploy-server_delete_button']" size="mini" type="danger" @click="removeProject(scope.row._id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

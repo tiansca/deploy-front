@@ -10,7 +10,7 @@ export function login(data) {
 
 export function getInfo() {
   return request({
-    url: `users/myself`,
+    url: `/user/checkToken`,
     method: 'get'
     // params: { token }
   })
@@ -18,7 +18,7 @@ export function getInfo() {
 
 export function logout() {
   return request({
-    url: `users/logout`,
+    url: `user/logout`,
     method: 'get'
   })
 }
@@ -53,5 +53,13 @@ export function updateUser(data) {
     url: `users/update`,
     method: 'post',
     data
+  })
+}
+
+export function refreshTokenApi(params) {
+  return request({
+    url: `user/refreshToken`,
+    method: 'get',
+    params
   })
 }

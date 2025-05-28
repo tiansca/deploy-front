@@ -52,8 +52,8 @@ module.exports = {
       // },
       '/api': {
         // target: ' http://192.168.2.24:8081'
-        target: 'http://localhost:3210',
-        changeOrigin: true,
+        target: process.env.VUE_APP_AUTH_FRONTEND_URL,
+        // changeOrigin: true,
         pathRewrite: { // 重命名
           '^/api': ''
         }

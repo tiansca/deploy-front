@@ -6,6 +6,7 @@ const getters = {
   name: state => state.user.name,
   userId: state => state.user.id,
   roles: state => state.user.roles,
+  permissions: state => state.user.permissions,
   partialArea: state => state.user.partialArea,
   permission_routes: state => state.permission.routes,
   report_scoure: state => state.report.source

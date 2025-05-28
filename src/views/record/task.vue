@@ -1,5 +1,6 @@
 <script>
 import { cancelTaskApi, stopCurrTaskApi } from '@/api/deploy'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'Task',
@@ -7,7 +8,7 @@ export default {
     return {
       currTask: null,
       waitTask: [],
-      logContent: '',
+      logContent: [],
       eventSource: null
     }
   },
@@ -25,7 +26,7 @@ export default {
       this.$router.back()
     },
     getTaskInfo() {
-      const eventSource = new EventSource('/api/task')
+      const eventSource = new EventSource(process.env['VUE_APP_AUTH_BACKEND_URL'] + '/proxy/deploy/task?token=' + getToken())
       this.eventSource = eventSource
       eventSource.onmessage = (event) => {
         // console.log('New message:', event.data)
@@ -36,12 +37,13 @@ export default {
             this.currTask = data.activeTask
             this.$set(this, 'currTask', data.activeTask)
           } else if (data.type === 'log') {
-            this.$nextTick(() => {
-              this.logContent += data.log
-              this.logToBottom()
-            })
+            console.log(data.log)
+            // this.$nextTick(() => {
+            this.logContent.push(data.log)
+            this.logToBottom()
+            // })
           } else if (data.type === 'clearLog') {
-            this.logContent = data.log
+            this.logContent = [data.log]
             this.logToBottom()
           }
         } catch (e) {
@@ -84,7 +86,7 @@ export default {
       <h3 style="text-align: center">任务队列</h3>
       <el-button class="back-Button" size="small" type="text" icon="el-icon-back" @click="goBank">返回</el-button>
     </div>
-    <div v-if="currTask || logContent" class="task-content">
+    <div v-if="currTask || logContent.length" class="task-content">
       <div class="curr-task">
         <div class="curr-task-info-head">
           <span class="curr-task-info-title">当前任务</span>
@@ -110,7 +112,9 @@ export default {
         <div class="curr-log-title">
           <span class="curr-log-title-text">日志</span>
         </div>
-        <div ref="logContent" class="curr-log-content" v-html="logContent"></div>
+        <div ref="logContent" class="curr-log-content">
+          <div v-for="(item, index) in logContent" :key="index" v-html="item"></div>
+        </div>
       </div>
       <div class="wait-task">
         <div class="wait-task-title">
