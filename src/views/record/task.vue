@@ -37,11 +37,10 @@ export default {
             this.currTask = data.activeTask
             this.$set(this, 'currTask', data.activeTask)
           } else if (data.type === 'log') {
-            console.log(data.log)
-            // this.$nextTick(() => {
-            this.logContent.push(data.log)
-            this.logToBottom()
-            // })
+            this.$nextTick(() => {
+              this.logContent.push(data.log)
+              this.logToBottom()
+            })
           } else if (data.type === 'clearLog') {
             this.logContent = [data.log]
             this.logToBottom()
