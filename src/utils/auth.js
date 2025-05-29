@@ -10,6 +10,7 @@ export function getToken() {
 
 export function setToken(token) {
   localStorage.setItem(TokenKey, token)
+  setCookie('islogin', token)
   store.commit('user/SET_TOKEN', token)
 }
 
