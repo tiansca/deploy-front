@@ -1,6 +1,7 @@
 import { login, logout, getInfo, refreshTokenApi } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import { setCookie } from '@/utils'
 
 const getDefaultState = () => {
   return {
@@ -98,6 +99,7 @@ const actions = {
         dispatch('refreshToken')
       }
       sessionStorage.setItem('userInfo', JSON.stringify(data))
+      setCookie('islogin', 'true', data.exp)
       return Promise.resolve(data)
     } catch (error) {
       return Promise.reject(error)
@@ -157,7 +159,9 @@ const actions = {
   },
   refreshToken({ commit }) {
     return new Promise(async resolve => {
-      await refreshTokenApi()
+      const res = await refreshTokenApi()
+      commit('SET_TOKEN', res.token)
+      setCookie('islogin', 'true', res.exp)
       resolve()
     })
   }
