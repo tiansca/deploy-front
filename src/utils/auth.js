@@ -1,11 +1,11 @@
 import Cookies from 'js-cookie'
 import store from '@/store'
-import { getCookie, setCookie } from '@/utils/index'
+import { setCookie } from '@/utils/index'
 
 const TokenKey = 'token'
 
 export function getToken() {
-  return Cookies.get(TokenKey) || getCookie('islogin')
+  return localStorage.getItem(TokenKey)
 }
 
 export function setToken(token) {
@@ -16,5 +16,6 @@ export function setToken(token) {
 
 export function removeToken() {
   setCookie('islogin', '')
+  localStorage.removeItem(TokenKey)
   return Cookies.remove(TokenKey)
 }
