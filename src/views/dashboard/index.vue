@@ -175,7 +175,7 @@
               <el-tooltip class="item" effect="dark" placement="top">
                 <i class="el-icon-info"></i>
                 <div slot="content">
-                  <p>部署脚本执行完成后，会自动在远程服务器的部署路径下执行启动脚本</p>
+                  <p>部署脚本执行完成后，会自动在远程服务器的部署路径下执行启动脚本，只支持ssh连接的服务器</p>
                 </div>
               </el-tooltip>
             </template>
