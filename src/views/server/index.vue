@@ -88,6 +88,10 @@
         <el-form-item v-show="form.connectionType" class="inline" label="私钥路径" :rules="form.connectionType ? rules.privateKey : null">
           <el-input v-model="form.privateKey"></el-input>
         </el-form-item>
+        <el-form-item label="连接协议" prop="protocol">
+          <el-radio v-model="form.protocol" label="ssh">ssh</el-radio>
+          <el-radio v-model="form.protocol" label="smb">smb</el-radio>
+        </el-form-item>
         <!--        <el-form-item label="部署目录" prop="rootPath">-->
         <!--          <el-input v-model="form.rootPath" placeholder="web服务器下存放网页的目录"></el-input>-->
         <!--        </el-form-item>-->
@@ -115,7 +119,8 @@ export default {
         password: '',
         // rootPath: '',
         connectionType: 0,
-        privateKey: ''
+        privateKey: '',
+        protocol: 'ssh'
       },
       rules: {
         name: [{ required: true, message: '请输入服务器名称', trigger: 'blur' }],
@@ -194,7 +199,7 @@ export default {
       })
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields()
+      this.$refs[formName].clearValidate()
       this.emptyForm()
     },
     closeAdd() {
@@ -210,7 +215,8 @@ export default {
         password: '',
         // rootPath: '',
         connectionType: 0,
-        privateKey: ''
+        privateKey: '',
+        protocol: 'ssh'
       }
     },
     updateProject() {
