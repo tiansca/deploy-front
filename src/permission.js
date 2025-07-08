@@ -61,8 +61,8 @@ router.beforeEach(async(to, from, next) => {
           // 获取VUE_CLI_AUTH_FRONTEND_URL环境变量
           const VUE_CLI_AUTH_FRONTEND_URL = process.env.VUE_APP_AUTH_FRONTEND_URL
           if (error.response && error.response.status) {
-            window.location.replace(VUE_CLI_AUTH_FRONTEND_URL + '?redirect=' + location.href)
-            console.log('111', VUE_CLI_AUTH_FRONTEND_URL + '?redirect=' + location.href)
+            window.location.replace(VUE_CLI_AUTH_FRONTEND_URL + '?redirect=' + encodeURIComponent(location.href))
+            console.log('111', VUE_CLI_AUTH_FRONTEND_URL + '?redirect=' + encodeURIComponent(location.href))
           }
           NProgress.done()
         }
@@ -83,8 +83,8 @@ router.beforeEach(async(to, from, next) => {
       // other pages that do not have permission to access are redirected to the login page.
       // next(`/login?redirect=${to.fullPath}`)
       const VUE_CLI_AUTH_FRONTEND_URL = process.env.VUE_APP_AUTH_FRONTEND_URL
-      window.location.replace(VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + encodeURIComponent(location.href))
-      console.log('222', VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + encodeURIComponent(location.href))
+      window.location.replace(VUE_CLI_AUTH_FRONTEND_URL + '?redirect=' + encodeURIComponent(location.href))
+      console.log('222', VUE_CLI_AUTH_FRONTEND_URL + '?redirect=' + encodeURIComponent(location.href))
       NProgress.done()
     } else {
       next()
