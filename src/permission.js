@@ -61,7 +61,7 @@ router.beforeEach(async(to, from, next) => {
           // 获取VUE_CLI_AUTH_FRONTEND_URL环境变量
           const VUE_CLI_AUTH_FRONTEND_URL = process.env.VUE_APP_AUTH_FRONTEND_URL
           if (error.response && error.response.status) {
-            window.location.replace(VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + location.href)
+            window.location.replace(VUE_CLI_AUTH_FRONTEND_URL + '?redirect=' + location.href)
             console.log('111', VUE_CLI_AUTH_FRONTEND_URL + '?redirect=' + location.href)
           }
           NProgress.done()
