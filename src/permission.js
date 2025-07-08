@@ -71,12 +71,15 @@ router.beforeEach(async(to, from, next) => {
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
       next()
-    } else {
+    } else if (location.href.indexOf('debug') === -1) {
       // other pages that do not have permission to access are redirected to the login page.
       // next(`/login?redirect=${to.fullPath}`)
       const VUE_CLI_AUTH_FRONTEND_URL = process.env.VUE_APP_AUTH_FRONTEND_URL
-      window.location.replace(VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + location.href)
-      console.log('222', VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + location.href)
+      window.location.replace(VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + encodeURIComponent(location.href))
+      console.log('222', VUE_CLI_AUTH_FRONTEND_URL + '/#/login?redirect=' + encodeURIComponent(location.href))
+      NProgress.done()
+    } else {
+      next()
       NProgress.done()
     }
   }
