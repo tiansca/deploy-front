@@ -105,6 +105,15 @@ const actions = {
       return Promise.reject(error)
     }
   },
+  async getIsLogin({ commit, dispatch }, cache) {
+    try {
+      await getInfo()
+      setCookie('islogin', 'true')
+      return Promise.resolve(true)
+    } catch (error) {
+      return Promise.reject(false)
+    }
+  },
   // getInfo({ commit, state }) {
   //   return new Promise((resolve, reject) => {
   //     // getInfo(state.token).then(response => {
