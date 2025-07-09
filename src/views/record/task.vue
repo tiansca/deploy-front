@@ -177,6 +177,7 @@ export default {
     align-items: center;
     .info-label{
       margin-right: 3px;
+      white-space: nowrap;
     }
     .info-value{
       margin-right: 34px;
