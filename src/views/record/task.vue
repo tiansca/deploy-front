@@ -39,6 +39,10 @@ export default {
           } else if (data.type === 'log') {
             this.$nextTick(() => {
               this.logContent.push(data.log)
+              // 如果logContent长度超过1000，则只保留后面1000条
+              if (this.logContent.length > 1000) {
+                this.logContent = this.logContent.slice(-1000)
+              }
               this.logToBottom()
             })
           } else if (data.type === 'clearLog') {
@@ -98,13 +102,13 @@ export default {
         </div>
         <div class="curr-task-info-wrap">
           <span class="info-label">名称:</span>
-          <span class="info-value">{{ currTask ? currTask.name || '-' : '-' }}</span>
+          <span class="info-value" :title="currTask ? currTask.name || '-' : '-'">{{ currTask ? currTask.name || '-' : '-' }}</span>
           <span class="info-label">branch/tag:</span>
-          <span class="info-value">{{ currTask ? currTask.branch || currTask.tagName : '-' }}</span>
+          <span class="info-value" :title="currTask ? currTask.branch || currTask.tagName : '-'">{{ currTask ? currTask.branch || currTask.tagName : '-' }}</span>
           <span class="info-label">服务器:</span>
-          <span class="info-value">{{ currTask ? currTask.ip || '本机部署' || '-' : '-' }}</span>
+          <span class="info-value" :title="currTask ? currTask.ip || '本机部署' || '-' : '-'">{{ currTask ? currTask.ip || '本机部署' || '-' : '-' }}</span>
           <span class="info-label">部署路径:</span>
-          <span class="info-value" style="flex-grow: 3;">{{ currTask ? currTask.path || '-' : '-' }}</span>
+          <span class="info-value" style="flex-grow: 3;" :title="currTask ? currTask.path || '-' : '-'">{{ currTask ? currTask.path || '-' : '-' }}</span>
         </div>
       </div>
       <div class="curr-log">
@@ -112,7 +116,7 @@ export default {
           <span class="curr-log-title-text">日志</span>
         </div>
         <div ref="logContent" class="curr-log-content">
-          <div v-for="(item, index) in logContent" :key="index" v-html="item"></div>
+          <div v-for="(item, index) in logContent" :key="index" v-html="item" style="content-visibility: auto"></div>
         </div>
       </div>
       <div class="wait-task">

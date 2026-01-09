@@ -78,7 +78,7 @@
           <el-button v-permission="['deploy-trigger_button']" size="mini" type="success" title="启动部署流程" @click="deploy(scope.row)">部署</el-button>
           <el-button v-permission="['deploy-project_edit_button']" size="mini" type="primary" title="编辑项目" @click="openAdd('edit', scope.row)">编辑</el-button>
           <el-button :loading="scope.row.cloneLoading" size="mini" type="warning" title="重新从git克隆项目，更改项目地址或者本地目录后需要手动触发项目重新克隆" @click="cloneProject(scope.row)">克隆</el-button>
-          <el-button v-permission="['deploy-project_delete_button']" size="mini" type="danger" title="删除项目部署信息" @click="removeProject(scope.row._id)">删除</el-button>
+          <el-button v-permission="['deploy-project_delete_button']" size="mini" type="danger" title="删除项目部署信息" @click="removeProject(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -188,6 +188,9 @@
             <el-input v-if="startEdit" v-model="startShellContent" type="textarea" rows="10"></el-input>
             <div v-else-if="startShellContent"><pre style="white-space: break-spaces; line-height: 1.5;background-color: #efefef; padding: 8px" v-html="startShellContent"></pre></div>
           </el-form-item>
+          <el-form-item label="回调地址" prop="apiCallback">
+            <el-input v-model="form.apiCallback" placeholder="回调地址"></el-input>
+          </el-form-item>
         </div>
 
       </el-form>
@@ -239,7 +242,8 @@ export default {
         buildMode: 'npm',
         eventType: 'push',
         buildShell: '', // 构建脚本
-        startShell: ''
+        startShell: '',
+        apiCallback: ''
       },
       // rules: {
       //   name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
@@ -330,10 +334,20 @@ export default {
       })
     },
     async deploy(project) {
-      await this.$confirm('确定要部署吗？', '提示', {
+      if (project.eventType !== 'push') {
+        this.$alert('响应时间为“创建tag”的项目不支持手动部署', '提示', {
+          confirmButtonText: '确定',
+          type: 'warning'
+        })
+        return
+      }
+      console.log(project)
+      const confirmContent = `<div style="font-weight: 600"">确定要部署吗？</div><div><span>名称：</span><span style="font-weight: 600">${project.name}</span></div><div><span>分支：</span><span style="font-weight: 600">${project.branch}</span></div><div><span>服务器：</span><span style="font-weight: 600">${project.ip}</span></div><div><span>路径：</span><span style="font-weight: 600">${project.path}</span></div>`
+      await this.$confirm(confirmContent, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'success'
+        type: 'success',
+        dangerouslyUseHTMLString: true
       })
       deploy({
         id: project._id
@@ -450,14 +464,16 @@ export default {
         this.$message.error(err.msg)
       })
     },
-    removeProject(id) {
-      this.$confirm('确定要删除该项目信息吗？', '提示', {
+    removeProject(project) {
+      const confirmContent = `<div style="font-weight: 600"">确定要删除该项目信息吗？</div><div><span>名称：</span><span style="font-weight: 600">${project.name}</span></div><div><span>分支：</span><span style="font-weight: 600">${project.branch}</span></div><div><span>服务器：</span><span style="font-weight: 600">${project.ip}</span></div><div><span>路径：</span><span style="font-weight: 600">${project.path}</span></div>`
+      this.$confirm(confirmContent, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'error'
+        type: 'error',
+        dangerouslyUseHTMLString: true
       }).then(() => {
         removeProject({
-          id: id
+          id: project._id
         }).then(res => {
           this.$message.success(res.msg)
           setTimeout(() => {
