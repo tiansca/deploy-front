@@ -192,7 +192,47 @@
             <el-input v-model="form.apiCallback" placeholder="回调地址"></el-input>
           </el-form-item>
         </div>
-
+        <el-form-item label="是否共享" class="inline" prop="isShare">
+          <template #label>
+            <span>是否共享</span>
+            <el-tooltip class="item" effect="dark" placement="top">
+              <i class="el-icon-info"></i>
+              <div slot="content">
+                <p>共享权限只有创建者可更改</p>
+              </div>
+            </el-tooltip>
+          </template>
+          <el-switch v-model="form.isShare" :disabled="form.creator && form.creator !== userId"></el-switch>
+        </el-form-item>
+        <el-form-item v-if="form.isShare" label="共享范围" prop="owner.range">
+          <div style="margin-top: 12px; display: flex">
+            <!--     所有用户，指定用户 radio       -->
+            <el-radio-group v-model="form.owner.range" :disabled="form.creator && form.creator !== userId" style="flex-shrink: 0">
+              <el-radio label="all">所有用户</el-radio>
+              <el-radio label="part">指定用户</el-radio>
+            </el-radio-group>
+            <div v-if="form.owner.range === 'part'" style="margin-left: 20px; margin-top: -10px; flex-grow: 1">
+              <el-select
+                v-model="form.owner.userIds"
+                :disabled="form.creator && form.creator !== userId"
+                multiple
+                placeholder="请选择用户"
+                clearable
+                filterable
+                remote
+                reserve-keyword
+                :remote-method="getUserList"
+                :loading="userListLoading"
+                style="width: 100%"
+              >
+                <el-option v-for="item in userList" :key="item.id" :label="item.username" :value="item.id"></el-option>
+              </el-select>
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item v-if="form.creator" label="创建者" prop="creator">
+          <span> {{ getCreatorUserName(form.creator) }} </span>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" :disabled="addDisable" @click="submitForm('form')">提交</el-button>
@@ -221,7 +261,8 @@ import {
   updateProject,
   removeProject,
   getServerList,
-  addShellApi, updateShellApi, getShellApi, getServerIpApi, cloneProjectApi, setWebHookApi, getWebHookApi
+  addShellApi, updateShellApi, getShellApi, getServerIpApi, cloneProjectApi, setWebHookApi, getWebHookApi,
+  getUserListApi
 } from '@/api/deploy.js'
 export default {
   name: 'Dashboard',
@@ -243,7 +284,12 @@ export default {
         eventType: 'push',
         buildShell: '', // 构建脚本
         startShell: '',
-        apiCallback: ''
+        apiCallback: '',
+        isShare: true,
+        owner: {
+          range: 'all',
+          userIds: []
+        }
       },
       // rules: {
       //   name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
@@ -264,7 +310,10 @@ export default {
       startEditType: 'update', // 编辑类型update/add
       serverLocalIp: '',
       webhook: '',
-      setRobotDialogVisible: false
+      setRobotDialogVisible: false,
+      userList: [],
+      userListLoading: false,
+      allUserList: []
     }
   },
   computed: {
@@ -281,6 +330,9 @@ export default {
     },
     currServer() {
       return this.form.server
+    },
+    userId() {
+      return Number(this.$store.getters.userId) || 0
     }
   },
   watch: {
@@ -303,6 +355,7 @@ export default {
     }].concat(res.data)
     console.log(res, res2)
     this.getList()
+    this.getUserList()
   },
   methods: {
     getServerIp(id) {
@@ -378,6 +431,7 @@ export default {
         }
       }
       this.resetForm('form')
+      console.log(this.form)
     },
     handleClose(done) {
       console.log('关闭')
@@ -385,6 +439,7 @@ export default {
       done()
     },
     submitForm(formName) {
+      console.log(this.form)
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.addDisable = true
@@ -444,7 +499,12 @@ export default {
         buildMode: 'npm',
         eventType: 'push',
         buildShell: '', // 构建脚本
-        startShell: ''
+        startShell: '',
+        isShare: true,
+        owner: {
+          range: 'all',
+          userIds: []
+        }
       }
       this.buildShellContent = ''
       this.startShellContent = ''
@@ -668,6 +728,34 @@ export default {
         console.log(err)
         // this.$message.error(err.msg)
       })
+    },
+    async getUserList(query) {
+      this.userListLoading = true
+      try {
+        const res = await getUserListApi({
+          userName: query || ''
+        })
+        if (res && res.data) {
+          this.userList = res.data.map(item => {
+            item.label = item.username
+            return item
+          })
+          if (!query) {
+            this.allUserList = [...this.userList]
+          }
+        } else {
+          this.userList = []
+        }
+      } catch (e) {
+        console.log(e)
+        this.userList = []
+      }
+      console.log(this.userList)
+      this.userListLoading = false
+    },
+    getCreatorUserName(id) {
+      const targetUser = this.allUserList.find(item => item.id === id)
+      return targetUser ? targetUser.username : '-'
     }
   }
 }

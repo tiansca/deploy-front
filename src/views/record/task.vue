@@ -38,10 +38,17 @@ export default {
             this.$set(this, 'currTask', data.activeTask)
           } else if (data.type === 'log') {
             this.$nextTick(() => {
-              this.logContent.push(data.log)
-              // 如果logContent长度超过1000，则只保留后面1000条
-              if (this.logContent.length > 1000) {
-                this.logContent = this.logContent.slice(-1000)
+              if (!data.log) {
+                return
+              }
+              if (data.log.indexOf('\n') === -1 && data.log.indexOf('<br') === -1 && this.logContent.length > 0) {
+                this.logContent[this.logContent.length - 1] += data.log
+              } else {
+                this.logContent.push(data.log)
+                // 如果logContent长度超过500，则只保留后面500条
+                if (this.logContent.length > 500) {
+                  this.logContent = this.logContent.slice(-500)
+                }
               }
               this.logToBottom()
             })
@@ -116,7 +123,7 @@ export default {
           <span class="curr-log-title-text">日志</span>
         </div>
         <div ref="logContent" class="curr-log-content">
-          <div v-for="(item, index) in logContent" :key="index" v-html="item" style="content-visibility: auto"></div>
+          <div v-for="(item, index) in logContent" :key="index" style="content-visibility: auto" v-html="item"></div>
         </div>
       </div>
       <div class="wait-task">

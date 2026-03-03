@@ -176,3 +176,12 @@ export function getWebHookApi(params) {
     params
   })
 }
+
+// 获取用户列表, userName用于模糊搜索
+export function getUserListApi(params) {
+  return request({
+    url: '/user/getUserList',
+    method: 'get',
+    params
+  })
+}
